@@ -20,3 +20,10 @@ export interface FilterProps {}
 export interface TrackListProps {
   tracks: TrackType[];
 }
+
+export type FilterType = 'artist' | 'year' | 'genre';
+
+export interface FilterItem {
+  value: string;
+  count: number;
+}

@@ -7,6 +7,7 @@
   -ms-flex-direction: column;
   flex-direction: column;
   overflow-y: auto;
+  max-height: calc(100vh - 400px); /* Ограничиваем высоту для скролла */
 }
 
 .playlist__item {
@@ -29,6 +30,12 @@
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.playlist__track:last-child {
+  border-bottom: none;
 }
 
 .track__title {
@@ -60,6 +67,7 @@
   -ms-flex-pack: center;
   justify-content: center;
   margin-right: 17px;
+  flex-shrink: 0;
 }
 
 .track__titleSvg {
@@ -69,12 +77,20 @@
   stroke: #4e4e4e;
 }
 
+.track__titleText {
+  flex-grow: 1;
+}
+
 .track__titleLink {
   font-style: normal;
   font-weight: 400;
   font-size: 16px;
   line-height: 24px;
   color: #ffffff;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .track__titleSpan {
@@ -93,6 +109,7 @@
   -webkit-box-pack: start;
   -ms-flex-pack: start;
   justify-content: flex-start;
+  padding: 0 10px;
 }
 
 .track__authorLink {
@@ -102,10 +119,14 @@
   line-height: 24px;
   color: #ffffff;
   text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .track__album {
   width: 245px;
+  padding: 0 10px;
 }
 
 .track__albumLink {
@@ -114,14 +135,27 @@
   font-size: 16px;
   line-height: 24px;
   color: #696969;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.track__time {
+  width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 10px;
 }
 
 .track__timeSvg {
   width: 14px;
   height: 12px;
-  margin-right: 17px;
+  margin-right: 10px;
   fill: transparent;
   stroke: #696969;
+  flex-shrink: 0;
 }
 
 .track__timeText {
@@ -131,4 +165,5 @@
   line-height: 24px;
   text-align: right;
   color: #696969;
+  white-space: nowrap;
 }

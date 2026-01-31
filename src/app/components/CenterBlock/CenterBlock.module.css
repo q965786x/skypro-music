@@ -4,6 +4,7 @@
   -ms-flex-positive: 3;
   flex-grow: 3;
   padding: 20px 40px 20px 111px;
+  position: relative; /* Добавляем для позиционирования dropdown */
 }
 
 .centerblock__h2 {
@@ -49,6 +50,25 @@
   border-radius: 60px;
   padding: 6px 20px;
   color: #ffffff;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filter__button:hover {
+  border-color: #d9b6ff;
+  color: #d9b6ff;
+}
+
+.filter__button:active {
+  border-color: #ad61ff;
+  color: #ad61ff;
+}
+
+.filter__button_active {
+  border-color: #ad61ff;
+  color: #ad61ff;
+  background-color: rgba(173, 97, 255, 0.1);
 }
 
 .filter__button:not(:last-child) {
