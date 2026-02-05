@@ -2,8 +2,11 @@ import { TrackType } from '@/sharedTypes/sharedTypes';
 
 // Получение уникальных исполнителей
 export function getUniqueArtists(
-  tracks: TrackType[],
+  tracks: TrackType[] = [],
 ): Array<{ value: string; count: number }> {
+  if (!tracks || !Array.isArray(tracks) || tracks.length === 0) {
+    return [];
+  }
   const artistMap = new Map<string, number>();
 
   tracks.forEach((track) => {
@@ -18,8 +21,11 @@ export function getUniqueArtists(
 
 // Получение уникальных годов
 export function getUniqueYears(
-  tracks: TrackType[],
+  tracks: TrackType[] = [],
 ): Array<{ value: string; count: number }> {
+  if (!tracks || !Array.isArray(tracks) || tracks.length === 0) {
+    return [];
+  }
   const yearMap = new Map<string, number>();
 
   tracks.forEach((track) => {
@@ -35,15 +41,20 @@ export function getUniqueYears(
 
 // Получение уникальных жанров
 export function getUniqueGenres(
-  tracks: TrackType[],
+  tracks: TrackType[] = [],
 ): Array<{ value: string; count: number }> {
+  if (!tracks || !Array.isArray(tracks) || tracks.length === 0) {
+    return [];
+  }
   const genreMap = new Map<string, number>();
 
   tracks.forEach((track) => {
-    track.genre.forEach((genre) => {
-      const count = genreMap.get(genre) || 0;
-      genreMap.set(genre, count + 1);
-    });
+    if (track.genre && Array.isArray(track.genre)) {
+      track.genre.forEach((genre) => {
+        const count = genreMap.get(genre) || 0;
+        genreMap.set(genre, count + 1);
+      });
+    }
   });
 
   return Array.from(genreMap.entries())

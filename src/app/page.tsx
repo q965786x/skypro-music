@@ -12,7 +12,7 @@ export default function Home() {
       <div className={styles.container}>
         <main className={styles.main}>
           <Navigation />
-          <Centerblock tracks={data} />
+          <Centerblock track={data || []} />
           <Sidebar />
         </main>
         <Bar />

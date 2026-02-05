@@ -77,6 +77,31 @@
   stroke: #4e4e4e;
 }
 
+/* Стили для мигающей точки */
+.track__dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: #4e4e4e; /* Цвет по умолчанию (неактивный) */
+  transition: background-color 0.3s ease;
+}
+
+.track__dotBlinking {
+  background-color: #B672FF; /* Фиолетовый цвет */
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.9);
+  }
+}
+
 .track__titleText {
   flex-grow: 1;
 }

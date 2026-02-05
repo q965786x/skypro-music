@@ -1,10 +1,50 @@
+'use client';
+
+import { useAppDispatch, useAppSelector } from '@/store/store';
 import styles from './bar.module.css';
 import classnames from 'classnames';
 import Link from 'next/link';
+import { useRef, useState } from 'react';
+import { setIsPlay } from '@/store/features/trackSlice';
 
 export default function Bar() {
+  const currentTrack = useAppSelector((state) => state.tracks.currentTrack);
+  const dispatch = useAppDispatch();
+
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  if (!currentTrack) return <></>;
+
+  console.log('Track file:', currentTrack?.track_file);
+
+  const playTrack = () => {
+    if (audioRef.current) {
+      audioRef.current.play();
+      setIsPlaying(true);
+      dispatch(setIsPlay(true));
+    }
+  };
+
+  const pauseTrack = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+      dispatch(setIsPlay(false));
+    }
+  };
+
+  const handlePlayButtonClick = () => {
+    if (isPlaying) {
+      pauseTrack();
+    } else {
+      playTrack();
+    }
+  };
+
   return (
     <div className={styles.bar}>
+      <audio ref={audioRef} src={currentTrack.track_file}></audio>
       <div className={styles.bar__content}>
         <div className={styles.bar__playerProgress}></div>
         <div className={styles.bar__playerBlock}>
@@ -15,9 +55,18 @@ export default function Bar() {
                   <use xlinkHref="/img/icon/sprite.svg#icon-prev"></use>
                 </svg>
               </div>
-              <div className={classnames(styles.player__btnPlay, styles.btn)}>
+              <div
+                className={classnames(styles.player__btnPlay, styles.btn, {
+                  [styles.player__btnPlay_active]: isPlaying,
+                })}
+                onClick={handlePlayButtonClick}
+              >
                 <svg className={styles.player__btnPlaySvg}>
-                  <use xlinkHref="/img/icon/sprite.svg#icon-play"></use>
+                  {isPlaying ? ( // Меняем иконку в зависимости от состояния
+                    <use xlinkHref="/img/icon/sprite.svg#icon-pause"></use>
+                  ) : (
+                    <use xlinkHref="/img/icon/sprite.svg#icon-play"></use>
+                  )}
                 </svg>
               </div>
               <div className={styles.player__btnNext}>
@@ -53,12 +102,12 @@ export default function Bar() {
                 </div>
                 <div className={styles.trackPlay__author}>
                   <Link className={styles.trackPlay__authorLink} href="">
-                    Ты та...
+                    {currentTrack.author}
                   </Link>
                 </div>
                 <div className={styles.trackPlay__album}>
                   <Link className={styles.trackPlay__albumLink} href="">
-                    Баста
+                    {currentTrack.album}
                   </Link>
                 </div>
               </div>
