@@ -1,8 +1,8 @@
-import styles from './SideBar.module.css';
+import styles from './sidebar.module.css';
 import Link from 'next/link';
 import Image from 'next/image';
 
-export default function SideBar() {
+export default function Sidebar() {
   return (
     <div className={styles.main__sidebar}>
       <div className={styles.sidebar__personal}>
@@ -18,7 +18,7 @@ export default function SideBar() {
           <div className={styles.sidebar__item}>
             <Link className={styles.sidebar__link} href="#">
               <Image
-                className='sidebar__img'
+                className="sidebar__img"
                 src="/img/playlist01.png"
                 alt="day's playlist"
                 width={250}
@@ -29,7 +29,7 @@ export default function SideBar() {
           <div className={styles.sidebar__item}>
             <Link className={styles.sidebar__link} href="#">
               <Image
-                className='sidebar__img'
+                className="sidebar__img"
                 src="/img/playlist02.png"
                 alt="day's playlist"
                 width={250}
@@ -40,7 +40,7 @@ export default function SideBar() {
           <div className={styles.sidebar__item}>
             <Link className={styles.sidebar__link} href="#">
               <Image
-                className='sidebar__img'
+                className="sidebar__img"
                 src="/img/playlist03.png"
                 alt="day's playlist"
                 width={250}

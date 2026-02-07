@@ -1,9 +1,10 @@
 import styles from './page.module.css';
 //import './page.css';
 import Navigation from './components/Navigation/Navigation';
-import CenterBlock from './components/CenterBlock/CenterBlock';
-import SideBar from './components/SideBar/SideBar';
+import { Centerblock } from './components/Centerblock/Centerblock';
+import Sidebar from './components/Sidebar/Sidebar';
 import Bar from './components/Bar/Bar';
+import { data } from '@/data';
 
 export default function Home() {
   return (
@@ -11,8 +12,8 @@ export default function Home() {
       <div className={styles.container}>
         <main className={styles.main}>
           <Navigation />
-          <CenterBlock />
-          <SideBar />
+          <Centerblock tracks={data} />
+          <Sidebar />
         </main>
         <Bar />
         <footer className="footer"></footer>

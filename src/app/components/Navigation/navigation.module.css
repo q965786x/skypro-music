@@ -1,7 +1,7 @@
 .main__nav {
   width: 244px;
   background-color: #181818;
-  padding: 20px 0 20px 36px;
+  padding: 20px 0 20px 36px; 
 }
 
 .nav__logo {
@@ -9,7 +9,7 @@
   height: 43px;
   padding: 13px 0 13px 0;
   background-color: transparent;
-  margin-bottom: 20px;
+  margin-bottom: 20px;  
 }
 
 .logo__image {
@@ -18,6 +18,7 @@
   color: #181818;
 }
 
+/* Бургер-меню */
 .nav__burger {
   width: 20px;
   height: 36px;
@@ -31,7 +32,7 @@
   flex-direction: column;
   -webkit-box-pack: justify;
   -ms-flex-pack: justify;
-  justify-content: space-between;
+  justify-content: space-between;  
 }
 
 .burger__line {
@@ -39,20 +40,36 @@
   width: 100%;
   height: 1px;
   background-color: #d3d3d3;
+  transition: all 0.3s ease;  
 }
 
+/* Меню - скрыто по умолчанию  */
 .nav__menu {
-  display: block;
+  position: absolute;
+  top: 120px; 
+  left: 36px; 
+  width: auto;
+  background-color: #181818;  
+  border-radius: 12px;
+  padding: 20px;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+}
+
+.nav__menu_open {
+  opacity: 1;
   visibility: visible;
+  transform: translateY(0);
 }
 
 .menu__list {
-  padding: 18px 0 10px 0;
+  padding: 18px 0 10px 0;  
 }
 
 .menu__item {
   padding: 5px 0;
-  margin-bottom: 16px;
+  margin-bottom: 16px;  
 }
 
 .menu__link {
