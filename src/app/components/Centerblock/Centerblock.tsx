@@ -15,15 +15,6 @@ import {
 } from '@/utils/filterUtils';
 
 export function Centerblock({ track }: CenterblockProp) {
-  /*if (!track || !Array.isArray(track)) {
-    return (
-      <div className={styles.centerblock}>
-        <Search />
-        <h2 className={styles.centerblock__h2}>Треки</h2>
-        <div className={styles.centerblock__content}>Загрузка треков...</div>
-      </div>
-    );
-  }*/
   const [activeFilter, setActiveFilter] = useState<FilterType | null>(null);
   const [dropdownPosition, setDropdownPosition] = useState<{
     top: number;
