@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import styles from './centerblock.module.css';
 import Search from '../Search/Search';
 import Filter from '../Filter/Filter';
-import { CenterblockProps, FilterType } from '@/sharedTypes/sharedTypes';
+import { CenterblockProp, FilterType } from '@/sharedTypes/sharedTypes';
 import TrackList from '../Tracklist/Tracklist';
 import FilterDropdown from '../FilterDropdown/FilterDropdown';
 
@@ -14,7 +14,7 @@ import {
   getUniqueYears,
 } from '@/utils/filterUtils';
 
-export function Centerblock({ tracks }: CenterblockProps) {
+export function Centerblock({ track }: CenterblockProp) {
   const [activeFilter, setActiveFilter] = useState<FilterType | null>(null);
   const [dropdownPosition, setDropdownPosition] = useState<{
     top: number;
@@ -26,9 +26,9 @@ export function Centerblock({ tracks }: CenterblockProps) {
   const genreButtonRef = useRef<HTMLButtonElement>(null);
 
   // Получаем данные для фильтров из треков
-  const artists = getUniqueArtists(tracks);
-  const years = getUniqueYears(tracks);
-  const genres = getUniqueGenres(tracks);
+  const artists = getUniqueArtists(track);
+  const years = getUniqueYears(track);
+  const genres = getUniqueGenres(track);
 
   const handleFilterClick = (filterType: FilterType) => {
     console.log('Клик по фильтру:', filterType);
@@ -154,7 +154,7 @@ export function Centerblock({ tracks }: CenterblockProps) {
 
       <div className={styles.centerblock__content}>
         <Filter />
-        <TrackList tracks={tracks} />
+        <TrackList tracks={track} />
       </div>
     </div>
   );

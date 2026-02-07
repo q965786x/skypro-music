@@ -11,14 +11,14 @@ export interface TrackType {
   stared_user: string[] | number[];
 }
 
-export interface CenterblockProps {
-  tracks: TrackType[];
+export interface CenterblockProp {
+  track: TrackType[];
 }
 
 export interface FilterProps {}
 
-export interface TrackListProps {
-  tracks: TrackType[];
+export interface TrackListProp {
+  track: TrackType[];
 }
 
 export type FilterType = 'artist' | 'year' | 'genre';

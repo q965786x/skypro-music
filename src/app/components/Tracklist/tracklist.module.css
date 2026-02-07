@@ -8,6 +8,29 @@
   flex-direction: column;
   overflow-y: auto;
   max-height: calc(100vh - 400px); /* Ограничиваем высоту для скролла */
+
+  scrollbar-width: thin;
+  scrollbar-color: rgba(182, 114, 255, 0.5) rgba(255, 255, 255, 0.05);
+}
+
+.content__playlist::-webkit-scrollbar {
+  width: 8px;
+}
+
+.content__playlist::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  margin: 4px 0;
+}
+
+.content__playlist::-webkit-scrollbar-thumb {
+  background: rgba(182, 114, 255, 0.5);
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.content__playlist::-webkit-scrollbar-thumb:hover {
+  background: rgba(182, 114, 255, 0.7);
 }
 
 .playlist__item {
@@ -75,6 +98,31 @@
   height: 17px;
   fill: transparent;
   stroke: #4e4e4e;
+}
+
+/* Стили для мигающей точки */
+.track__dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: #4e4e4e; /* Цвет по умолчанию (неактивный) */
+  transition: background-color 0.3s ease;
+}
+
+.track__dotBlinking {
+  background-color: #B672FF; /* Фиолетовый цвет */
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.9);
+  }
 }
 
 .track__titleText {
@@ -146,13 +194,14 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding: 0 10px;
+  padding: 0 25px 0 10px;
+  margin-right: 12px;
 }
 
 .track__timeSvg {
   width: 14px;
   height: 12px;
-  margin-right: 10px;
+  margin-right: 8px;
   fill: transparent;
   stroke: #696969;
   flex-shrink: 0;
