@@ -94,6 +94,19 @@
   stroke: #d9d9d9;
 }
 
+.player__btnPrev_disabled svg,
+.player__btnNext_disabled svg {
+  opacity: 0.5;
+  cursor: not-allowed;
+  stroke: #696969;
+}
+
+.player__btnPrev_disabled:hover svg,
+.player__btnNext_disabled:hover svg {
+  stroke: #696969;
+  fill: transparent;
+}
+
 .player__btnRepeat {
   margin-right: 24px;
 }
@@ -103,6 +116,16 @@
   height: 12px;
   fill: transparent;
   stroke: #696969;
+}
+
+.player__btnRepeat_active svg {
+  stroke: #ffffff;
+  fill: transparent;
+}
+
+.player__btnRepeat_active:hover svg {
+  stroke: #ffffff;
+  fill: transparent;
 }
 
 .player__btnShuffle {
@@ -119,6 +142,11 @@
   height: 12px;
   fill: transparent;
   stroke: #696969;
+}
+
+.player__btnShuffle_active svg {
+  stroke: #ffffff;
+  fill: transparent;
 }
 
 .player__btnPrev,
@@ -260,7 +288,32 @@
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
-  padding: 0 92px 0 0;
+  padding: 0 20px 0 0;
+}
+
+/* Стили для блока отображения времени */
+.timeDisplay {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  margin-left: 20px;
+  min-width: 90px;
+}
+
+.timeDisplay__text { 
+  font-style: normal; 
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  color: #ffffff;
+  white-space: nowrap;
+
 }
 
 .volume__content {
@@ -359,3 +412,4 @@
   stroke: #ffffff;
   cursor: pointer;
 }
+
