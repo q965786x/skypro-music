@@ -58,32 +58,24 @@ export default function Bar() {
   }, [currentTrack, playlist, shuffledPlaylist, isShuffle]);
 
   useEffect(() => {
-    if (currentTrack && audioRef.current) {
-      const handleLoadedMetadata = () => {
-        if (audioRef.current) {
-          setDuration(audioRef.current.duration);
-        }
-      };
-
-      audioRef.current.addEventListener('loadedmetadata', handleLoadedMetadata);
-
-      return () => {
-        if (audioRef.current) {
-          audioRef.current.removeEventListener(
-            'loadedmetadata',
-            handleLoadedMetadata,
-          );
-        }
-      };
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
     }
-  }, [currentTrack]);
+  }, []);
 
   useEffect(() => {
     setIsLoadedTrack(false);
     setCurrentTime(0);
     setDuration(0);
-    setIsPlaying(false);
   }, [currentTrack]);
+
+  useEffect(() => {
+    if (isLoadedTrack && isPlay && audioRef.current) {
+      audioRef.current.play().catch((error) => {
+        dispatch(setIsPlaying(false));
+      });
+    }
+  }, [currentTrack, isLoadedTrack]);
 
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVolume = Number(e.target.value) / 100;
@@ -129,9 +121,6 @@ export default function Bar() {
   const onTimeUpdate = () => {
     if (audioRef.current) {
       setCurrentTime(audioRef.current.currentTime);
-      if (audioRef.current.duration && !duration) {
-        setDuration(audioRef.current.duration);
-      }
     }
   };
 
@@ -140,11 +129,6 @@ export default function Bar() {
       const trackDuration = audioRef.current.duration;
       setDuration(trackDuration);
       setIsLoadedTrack(true);
-
-      if (isPlay) {
-        audioRef.current.play();
-        dispatch(setIsPlaying(true));
-      }
     }
   };
 
@@ -175,12 +159,14 @@ export default function Bar() {
   };
 
   const handleTrackEnded = () => {
-    dispatch(setIsPlaying(false));
+    if (isLoop) {
+      return;
+    }
 
-    if (!isLoop) {
-      if (!isLastTrack) {
-        dispatch(setNextTrack());
-      }
+    if (isLastTrack) {
+      dispatch(setIsPlaying(false));
+    } else {
+      dispatch(setNextTrack());
     }
   };
 
