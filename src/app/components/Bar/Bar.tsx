@@ -34,27 +34,31 @@ export default function Bar() {
   );
   const isShuffle = useAppSelector((state) => state.tracks.isShuffle);
 
-  useEffect(() => {
-    if (!currentTrack) {
-      setIsFirstTrack(true);
-      setIsLastTrack(true);
-      return;
-    }
-
+  const getCurrentPlaylistInfo = () => {
     const currentPlaylist = isShuffle ? shuffledPlaylist : playlist;
 
-    if (currentPlaylist.length === 0) {
-      setIsFirstTrack(true);
-      setIsLastTrack(true);
-      return;
+    if (!currentTrack || currentPlaylist.length === 0) {
+      return { playlist: currentPlaylist, index: -1 };
     }
 
-    const currentIndex = currentPlaylist.findIndex(
+    const index = currentPlaylist.findIndex(
       (track) => track._id === currentTrack._id,
     );
 
-    setIsFirstTrack(currentIndex <= 0);
-    setIsLastTrack(currentIndex === currentPlaylist.length - 1);
+    return { playlist: currentPlaylist, index };
+  };
+
+  useEffect(() => {
+    const { playlist: currentPlaylist, index } = getCurrentPlaylistInfo();
+
+    if (!currentTrack || index === -1) {
+      setIsFirstTrack(true);
+      setIsLastTrack(true);
+      return;
+    }
+
+    setIsFirstTrack(index <= 0);
+    setIsLastTrack(index >= currentPlaylist.length - 1);
   }, [currentTrack, playlist, shuffledPlaylist, isShuffle]);
 
   useEffect(() => {
@@ -75,7 +79,7 @@ export default function Bar() {
         dispatch(setIsPlaying(false));
       });
     }
-  }, [currentTrack, isLoadedTrack]);
+  }, [currentTrack, isLoadedTrack, isPlay]);
 
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVolume = Number(e.target.value) / 100;
@@ -145,13 +149,19 @@ export default function Bar() {
   };
 
   const onNextTrack = () => {
-    if (isLastTrack) return;
-    dispatch(setNextTrack());
+    const { playlist: currentPlaylist, index } = getCurrentPlaylistInfo();
+
+    if (index < currentPlaylist.length - 1) {
+      dispatch(setNextTrack());
+    }
   };
 
   const onPrevTrack = () => {
-    if (isFirstTrack) return;
-    dispatch(setPrevTrack());
+    const { playlist: currentPlaylist, index } = getCurrentPlaylistInfo();
+
+    if (index > 0) {
+      dispatch(setPrevTrack());
+    }
   };
 
   const onToggleShuffle = () => {
@@ -163,7 +173,9 @@ export default function Bar() {
       return;
     }
 
-    if (isLastTrack) {
+    const { playlist: currentPlaylist, index } = getCurrentPlaylistInfo();
+
+    if (index === currentPlaylist.length - 1) {
       dispatch(setIsPlaying(false));
     } else {
       dispatch(setNextTrack());
