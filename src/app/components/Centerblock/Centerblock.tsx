@@ -154,7 +154,7 @@ export function Centerblock({ track }: CenterblockProp) {
 
       <div className={styles.centerblock__content}>
         <Filter />
-        <TrackList tracks={track} />
+        <TrackList tracks={track} playlist={track} />
       </div>
     </div>
   );
