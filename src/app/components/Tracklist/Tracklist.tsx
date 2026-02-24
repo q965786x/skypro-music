@@ -11,21 +11,25 @@ import {
   setIsPlaying,
 } from '@/store/features/trackSlice';
 
-type TrackListProp = {
+type TrackListProps = {
   tracks: TrackType[];
   playlist: TrackType[];
+  onTrackClick?: (track: TrackType) => void;
 };
 
-export default function TrackList({ tracks, playlist }: TrackListProp) {
+export default function TrackList({ tracks, playlist }: TrackListProps) {
   const dispatch = useAppDispatch();
   const currentTrack = useAppSelector((state) => state.tracks.currentTrack);
   const isPlay = useAppSelector((state) => state.tracks.isPlay);
 
   const onClickTrack = (track: TrackType) => {
+    console.log('🎵 Клик по треку:', track.name, 'ID:', track._id);
     if (currentTrack?._id === track._id) {
+      console.log('➡️ Тот же трек, переключение воспроизведения');
       dispatch(setIsPlaying(!isPlay));
       return;
     }
+    console.log('➡️ Новый трек, устанавливаем для воспроизведения');
     dispatch(setCurrentTrack(track));
     dispatch(setCurrentPlaylist(playlist));
   };

@@ -1,67 +1,37 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './centerblock.module.css';
 import Search from '../Search/Search';
-import Filter from '../Filter/Filter';
-import { CenterblockProp, FilterType } from '@/sharedTypes/sharedTypes';
+import PlaylistHeader from '../PlaylistHeader/PlaylistHeader';
+import { CenterblockProps, FilterType } from '@/sharedTypes/sharedTypes';
 import TrackList from '../Tracklist/Tracklist';
 import FilterDropdown from '../FilterDropdown/FilterDropdown';
+import FilterButtons from '../FilterButtons/FilterButtons';
 
-import {
-  getUniqueArtists,
-  getUniqueGenres,
-  getUniqueYears,
-} from '@/utils/filterUtils';
-
-export function Centerblock({ track }: CenterblockProp) {
+export function Centerblock({
+  track,
+  onTrackSelect,
+  title = 'Треки',
+}: CenterblockProps) {
   const [activeFilter, setActiveFilter] = useState<FilterType | null>(null);
   const [dropdownPosition, setDropdownPosition] = useState<{
     top: number;
     left: number;
   } | null>(null);
 
-  const artistButtonRef = useRef<HTMLButtonElement>(null);
-  const yearButtonRef = useRef<HTMLButtonElement>(null);
-  const genreButtonRef = useRef<HTMLButtonElement>(null);
-
-  // Получаем данные для фильтров из треков
-  const artists = getUniqueArtists(track);
-  const years = getUniqueYears(track);
-  const genres = getUniqueGenres(track);
-
-  const handleFilterClick = (filterType: FilterType) => {
+  const handleFilterClick = (filterType: FilterType, buttonRect: DOMRect) => {
     console.log('Клик по фильтру:', filterType);
 
     if (activeFilter === filterType) {
       setActiveFilter(null);
       setDropdownPosition(null);
     } else {
-      let button: HTMLButtonElement | null = null;
-
-      switch (filterType) {
-        case 'artist':
-          button = artistButtonRef.current;
-          break;
-        case 'year':
-          button = yearButtonRef.current;
-          break;
-        case 'genre':
-          button = genreButtonRef.current;
-          break;
-      }
-
-      if (button) {
-        const rect = button.getBoundingClientRect();
-        const position = {
-          top: rect.bottom + window.scrollY,
-          left: rect.left + window.scrollX,
-        };
-
-        console.log('Позиция:', position);
-        setActiveFilter(filterType);
-        setDropdownPosition(position);
-      }
+      setActiveFilter(filterType);
+      setDropdownPosition({
+        top: buttonRect.bottom + window.scrollY,
+        left: buttonRect.left + window.scrollX,
+      });
     }
   };
 
@@ -74,25 +44,8 @@ export function Centerblock({ track }: CenterblockProp) {
   useEffect(() => {
     const handleResize = () => {
       if (activeFilter) {
-        let button: HTMLButtonElement | null = null;
-        switch (activeFilter) {
-          case 'artist':
-            button = artistButtonRef.current;
-            break;
-          case 'year':
-            button = yearButtonRef.current;
-            break;
-          case 'genre':
-            button = genreButtonRef.current;
-            break;
-        }
-        if (button) {
-          const rect = button.getBoundingClientRect();
-          setDropdownPosition({
-            top: rect.bottom + window.scrollY,
-            left: rect.left + window.scrollX,
-          });
-        }
+        setDropdownPosition(null);
+        setActiveFilter(null);
       }
     };
 
@@ -103,57 +56,25 @@ export function Centerblock({ track }: CenterblockProp) {
   return (
     <div className={styles.centerblock}>
       <Search />
-      <h2 className={styles.centerblock__h2}>Треки</h2>
+      <h2 className={styles.centerblock__h2}>{title}</h2>
 
-      <div className={styles.centerblock__filter}>
-        <div className={styles.filter__title}>Искать по:</div>
-
-        <button
-          ref={artistButtonRef}
-          className={`${styles.filter__button} ${activeFilter === 'artist' ? styles.filter__button_active : ''}`}
-          onClick={() => handleFilterClick('artist')}
-          type="button"
-        >
-          исполнителю
-        </button>
-
-        <button
-          ref={yearButtonRef}
-          className={`${styles.filter__button} ${activeFilter === 'year' ? styles.filter__button_active : ''}`}
-          onClick={() => handleFilterClick('year')}
-          type="button"
-        >
-          году выпуска
-        </button>
-
-        <button
-          ref={genreButtonRef}
-          className={`${styles.filter__button} ${activeFilter === 'genre' ? styles.filter__button_active : ''}`}
-          onClick={() => handleFilterClick('genre')}
-          type="button"
-        >
-          жанру
-        </button>
-      </div>
+      <FilterButtons
+        activeFilter={activeFilter}
+        onFilterClick={handleFilterClick}
+      />
 
       {/* Dropdown фильтров */}
       {activeFilter && dropdownPosition && (
         <FilterDropdown
           type={activeFilter}
-          data={
-            activeFilter === 'artist'
-              ? artists
-              : activeFilter === 'year'
-                ? years
-                : genres
-          }
+          tracks={track}
           onClose={handleCloseFilter}
           position={dropdownPosition}
         />
       )}
 
       <div className={styles.centerblock__content}>
-        <Filter />
+        <PlaylistHeader />
         <TrackList tracks={track} playlist={track} />
       </div>
     </div>

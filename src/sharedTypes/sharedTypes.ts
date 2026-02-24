@@ -11,19 +11,26 @@ export interface TrackType {
   stared_user: string[] | number[];
 }
 
-export interface CenterblockProp {
+export type CenterblockProps = {
   track: TrackType[];
-}
-
-export interface FilterProps {}
-
-export interface TrackListProp {
-  track: TrackType[];
-}
+  onTrackSelect?: (track: TrackType) => void; // Добавляем проп для выбора трека
+  title?: string; // Добавляем опциональный заголовок
+  subtitle?: string; // Добавляем опциональный подзаголовок
+};
 
 export type FilterType = 'artist' | 'year' | 'genre';
 
-export interface FilterItem {
+export type FilterItem = {
   value: string;
   count: number;
-}
+};
+
+export type FilterProps = {};
+
+export type BarProps = {
+  currentTrack?: TrackType | null; // Добавляем проп для Bar
+};
+
+export type TrackListProp = {
+  track: TrackType[];
+};
