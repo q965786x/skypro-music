@@ -10,6 +10,7 @@ import { getTracks } from '@/services/tracks/tracksApi';
 import { TrackType } from '@/sharedTypes/sharedTypes';
 import { useAppDispatch } from '@/store/store';
 import { setCurrentPlaylist } from '@/store/features/trackSlice';
+import { data as mockData } from '@/data';
 
 export default function Home() {
   const [tracks, setTracks] = useState<TrackType[]>([]);
@@ -18,6 +19,22 @@ export default function Home() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    // Проверяем, авторизован ли пользователь
+    const user = localStorage.getItem('user');
+    const isAuthenticated = !!user;
+
+    if (!isAuthenticated) {
+      // Для незарегистрированного пользователя используем моковые данные
+      console.log(
+        '✅ Используем моковые данные для незарегистрированного пользователя',
+      );
+      setTracks(mockData);
+      dispatch(setCurrentPlaylist(mockData));
+      setLoading(false);
+      return;
+    }
+
+    // Для зарегистрированного пользователя загружаем данные с API
     getTracks()
       .then((data) => {
         console.log('✅ Получены треки из API:', data);

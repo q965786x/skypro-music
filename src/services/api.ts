@@ -1,4 +1,3 @@
-import { headers } from 'next/headers';
 import { BASE_URL } from './constants';
 import axios from 'axios';
 

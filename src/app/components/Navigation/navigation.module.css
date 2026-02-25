@@ -81,3 +81,20 @@
   font-size: 16px;
   line-height: 24px;
 }
+
+.menu__button {
+  color: #ffffff;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  width: 100%;
+}
+
+.menu__button:hover {
+  color: #d9b6ff;
+}

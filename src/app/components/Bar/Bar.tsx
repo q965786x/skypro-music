@@ -74,12 +74,24 @@ export default function Bar() {
   }, [currentTrack]);
 
   useEffect(() => {
-    if (isLoadedTrack && isPlay && audioRef.current) {
-      audioRef.current.play().catch((error) => {
+    const playAudio = async () => {
+      if (!audioRef.current || !isLoadedTrack) return;
+
+      try {
+        if (isPlay) {
+          await audioRef.current.play();
+        } else {
+          audioRef.current.pause();
+        }
+      } catch (error) {
+        // Если произошла ошибка воспроизведения, обновляем состояние
+        console.error('Ошибка воспроизведения:', error);
         dispatch(setIsPlaying(false));
-      });
-    }
-  }, [currentTrack, isLoadedTrack, isPlay]);
+      }
+    };
+
+    playAudio();
+  }, [currentTrack, isLoadedTrack, isPlay, dispatch]);
 
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVolume = Number(e.target.value) / 100;
@@ -91,18 +103,21 @@ export default function Bar() {
 
   if (!currentTrack) return <></>;
 
-  const playTrack = () => {
+  const playTrack = async () => {
     if (audioRef.current) {
-      audioRef.current.play();
-      setIsPlaying(true);
-      dispatch(setIsPlaying(true));
+      try {
+        await audioRef.current.play();
+        dispatch(setIsPlaying(true));
+      } catch (error) {
+        console.error('Не удалось воспроизвести трек:', error);
+        dispatch(setIsPlaying(false));
+      }
     }
   };
 
   const pauseTrack = () => {
     if (audioRef.current) {
       audioRef.current.pause();
-      setIsPlaying(false);
       dispatch(setIsPlaying(false));
     }
   };
@@ -193,6 +208,7 @@ export default function Bar() {
         onLoadedMetadata={onLoadedMetadata}
         onCanPlay={onCanPlay}
         onEnded={handleTrackEnded}
+        preload="auto" // Добавляем preload для более быстрой загрузки
       />
       <div className={styles.bar__content}>
         <ProgressBar
