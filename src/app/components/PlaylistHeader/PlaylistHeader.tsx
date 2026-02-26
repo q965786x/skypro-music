@@ -1,4 +1,4 @@
-import styles from './filter.module.css';
+import styles from './playlistHeader.module.css';
 import classnames from 'classnames';
 
 export default function Filter() {

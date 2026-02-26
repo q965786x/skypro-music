@@ -4,14 +4,55 @@ import { useState, useEffect, useRef } from 'react';
 import styles from './navigation.module.css';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const burgerRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+
+  // Проверяем авторизацию при загрузке и при изменении localStorage
+  useEffect(() => {
+    const checkAuth = () => {
+      const user = localStorage.getItem('user');
+      setIsAuthenticated(!!user);
+    };
+
+    checkAuth();
+
+    // Слушаем изменения localStorage
+    window.addEventListener('storage', checkAuth);
+
+    return () => {
+      window.removeEventListener('storage', checkAuth);
+    };
+  }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    setIsAuthenticated(false);
+    setIsMenuOpen(false);
+    router.push('/auth/signin');
+  };
+
+  // Обработчик клика по "Мой плейлист"
+  const handlePlaylistClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    setIsMenuOpen(false);
+
+    if (!isAuthenticated) {
+      // Если пользователь не авторизован, перенаправляем на страницу входа
+      router.push('/auth/signin');
+    } else {
+      // Если авторизован, переходим на страницу плейлиста
+      router.push('/music/playlist');
+    }
   };
 
   // Закрытие меню при клике вне его
@@ -93,7 +134,7 @@ export default function Navigation() {
         <ul className={styles.menu__list}>
           <li className={styles.menu__item}>
             <Link
-              href="#"
+              href="/music/main"
               className={styles.menu__link}
               onClick={() => setIsMenuOpen(false)}
               tabIndex={isMenuOpen ? 0 : -1}
@@ -103,23 +144,33 @@ export default function Navigation() {
           </li>
           <li className={styles.menu__item}>
             <Link
-              href="#"
+              href="/music/playlist"
               className={styles.menu__link}
-              onClick={() => setIsMenuOpen(false)}
+              onClick={handlePlaylistClick}
               tabIndex={isMenuOpen ? 0 : -1}
             >
               Мой плейлист
             </Link>
           </li>
           <li className={styles.menu__item}>
-            <Link
-              href="../signin.html"
-              className={styles.menu__link}
-              onClick={() => setIsMenuOpen(false)}
-              tabIndex={isMenuOpen ? 0 : -1}
-            >
-              Войти
-            </Link>
+            {isAuthenticated ? (
+              <button
+                className={styles.menu__button}
+                onClick={handleLogout}
+                tabIndex={isMenuOpen ? 0 : -1}
+              >
+                Выйти
+              </button>
+            ) : (
+              <Link
+                href="/auth/signin"
+                className={styles.menu__link}
+                onClick={() => setIsMenuOpen(false)}
+                tabIndex={isMenuOpen ? 0 : -1}
+              >
+                Войти
+              </Link>
+            )}
           </li>
         </ul>
       </div>
