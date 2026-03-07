@@ -9,10 +9,11 @@ import {
   setIsPlaying,
   setNextTrack,
   setPrevTrack,
-  toggleShuffle,
+  setIsShuffled,
 } from '@/store/features/trackSlice';
 import { getTimePanel } from '@/utils/helper';
 import ProgressBar from '../ProgressBar/ProgressBar';
+import { TrackType } from '@/sharedTypes/sharedTypes';
 
 export default function Bar() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -28,28 +29,30 @@ export default function Bar() {
 
   const currentTrack = useAppSelector((state) => state.tracks.currentTrack);
   const isPlay = useAppSelector((state) => state.tracks.isPlay);
-  const playlist = useAppSelector((state) => state.tracks.playlist);
+  const currentPlaylist = useAppSelector(
+    (state) => state.tracks.currentPlaylist,
+  );
   const shuffledPlaylist = useAppSelector(
     (state) => state.tracks.shuffledPlaylist,
   );
   const isShuffle = useAppSelector((state) => state.tracks.isShuffle);
 
   const getCurrentPlaylistInfo = () => {
-    const currentPlaylist = isShuffle ? shuffledPlaylist : playlist;
+    const activePlaylist = isShuffle ? shuffledPlaylist : currentPlaylist;
 
-    if (!currentTrack || currentPlaylist.length === 0) {
-      return { playlist: currentPlaylist, index: -1 };
+    if (!currentTrack || activePlaylist.length === 0) {
+      return { playlist: activePlaylist, index: -1 };
     }
 
-    const index = currentPlaylist.findIndex(
-      (track) => track._id === currentTrack._id,
+    const index = activePlaylist.findIndex(
+      (track: TrackType) => track._id === currentTrack._id,
     );
 
-    return { playlist: currentPlaylist, index };
+    return { playlist: activePlaylist, index };
   };
 
   useEffect(() => {
-    const { playlist: currentPlaylist, index } = getCurrentPlaylistInfo();
+    const { playlist: currentPlaylistInfo, index } = getCurrentPlaylistInfo();
 
     if (!currentTrack || index === -1) {
       setIsFirstTrack(true);
@@ -59,7 +62,7 @@ export default function Bar() {
 
     setIsFirstTrack(index <= 0);
     setIsLastTrack(index >= currentPlaylist.length - 1);
-  }, [currentTrack, playlist, shuffledPlaylist, isShuffle]);
+  }, [currentTrack, currentPlaylist, shuffledPlaylist, isShuffle]);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -180,7 +183,7 @@ export default function Bar() {
   };
 
   const onToggleShuffle = () => {
-    dispatch(toggleShuffle());
+    dispatch(setIsShuffled(!isShuffle));
   };
 
   const handleTrackEnded = () => {
@@ -188,9 +191,9 @@ export default function Bar() {
       return;
     }
 
-    const { playlist: currentPlaylist, index } = getCurrentPlaylistInfo();
+    const { playlist: currentPlaylistInfo, index } = getCurrentPlaylistInfo();
 
-    if (index === currentPlaylist.length - 1) {
+    if (index === currentPlaylistInfo.length - 1) {
       dispatch(setIsPlaying(false));
     } else {
       dispatch(setNextTrack());

@@ -1,7 +1,7 @@
 .main__nav {
   width: 244px;
   background-color: #181818;
-  padding: 20px 0 20px 36px; 
+  padding: 0 36px;       
 }
 
 .nav__logo {
@@ -9,7 +9,7 @@
   height: 43px;
   padding: 13px 0 13px 0;
   background-color: transparent;
-  margin-bottom: 20px;  
+  margin-bottom: 0;
 }
 
 .logo__image {
@@ -45,11 +45,10 @@
 
 /* Меню - скрыто по умолчанию  */
 .nav__menu {
-  position: absolute;
-  top: 120px; 
+  position: absolute;  
   left: 36px; 
   width: auto;
-  background-color: #181818;  
+  background-color: transparent;  
   border-radius: 12px;
   padding: 20px;
   visibility: hidden;
