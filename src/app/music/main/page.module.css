@@ -28,12 +28,11 @@
 }
 
 .centerblock {
-  width: 100%;
-  max-width: 800px;
-  padding: 20px 40px;
+  width: auto;
   -webkit-box-flex: 3;
   -ms-flex-positive: 3;
   flex-grow: 3;
+  padding: 20px 40px 20px 111px;
 }
 
 .centerblock__loading {

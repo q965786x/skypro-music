@@ -35,6 +35,31 @@
   background-color: #313131;
   border-radius: 50%;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.sidebar__icon:hover {
+  background-color: #4a4a4a;
+}
+
+.sidebar__icon:active {
+  background-color: #5a5a5a;
+  transform: scale(0.95);
+}
+
+.sidebar__icon svg {
+  width: 40px;
+  height: 40px;
+  fill: none;
+  stroke: #ffffff;
+  transition: stroke 0.2s ease;
+}
+
+.sidebar__icon:hover svg {
+  stroke: #d9b6ff;
 }
 
 .sidebar__block {
