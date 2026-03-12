@@ -1,3 +1,5 @@
+'use client';
+
 import styles from './centerblock.module.css';
 import classnames from 'classnames';
 import Search from '../Search/Search';
@@ -5,24 +7,61 @@ import { TrackType } from '@/sharedTypes/sharedTypes';
 import { data } from '@/data';
 import TrackList from '../Tracklist/Tracklist';
 import Filter from '../Filter/Filter';
+import { useEffect, useMemo } from 'react';
+import { setPagePlaylist } from '@/store/features/trackSlice';
+import { useAppDispatch, useAppSelector } from '@/store/store';
 
 type centerBlockProps = {
   tracks: TrackType[];
   isLoading: boolean;
   errorRes: string | null;
   title: string;
+  pagePlaylist: TrackType[];
 };
 
-export function Centerblock({
+export default function Centerblock({
   errorRes,
   isLoading,
   tracks,
   title,
+  pagePlaylist,
 }: centerBlockProps) {
+  const dispatch = useAppDispatch();
+  const searchTerm = useAppSelector((state) => state.tracks.searchTerm);
+
+  useEffect(() => {
+    if (!isLoading && !errorRes && pagePlaylist.length > 0) {
+      dispatch(setPagePlaylist(pagePlaylist));
+    }
+  }, [isLoading, errorRes, pagePlaylist, dispatch]);
+
+  // Применяем поиск ко ВСЕМ трекам (pagePlaylist)
+  const searchedTracks = useMemo(() => {
+    if (searchTerm.length >= 2 && pagePlaylist.length > 0) {
+      const searchLower = searchTerm.toLowerCase();
+      return pagePlaylist.filter(
+        (track) =>
+          track.name.toLowerCase().startsWith(searchLower) ||
+          track.author.toLowerCase().startsWith(searchLower),
+      );
+    }
+    return pagePlaylist;
+  }, [searchTerm, pagePlaylist]);
+
+  // Определяем, какие треки показывать:
+  // - Если есть поисковый запрос, показываем результаты поиска по всем трекам
+  // - Если нет поиска, показываем отфильтрованные треки
+  const displayedTracks = useMemo(() => {
+    if (searchTerm.length >= 2) {
+      return searchedTracks;
+    }
+    return tracks;
+  }, [searchTerm, searchedTracks, tracks]);
+
   return (
     <div className={styles.centerblock}>
       <Search />
-      <Filter tracks={isLoading ? data : tracks} />
+      <Filter tracks={pagePlaylist} />
       <h2 className={styles.centerblock__h2}>{title}</h2>
       <div className={styles.centerblock__content}>
         <div className={styles.content__title}>
@@ -46,9 +85,15 @@ export function Centerblock({
             <span style={{ color: '#ff6b6b' }}>{errorRes}</span>
           ) : isLoading ? (
             <span style={{ color: '#ffffff' }}>Загрузка</span>
+          ) : displayedTracks.length === 0 ? (
+            <span style={{ color: '#ffffff' }}>Ничего не найдено</span>
           ) : (
-            tracks.map((track) => (
-              <TrackList key={track._id} track={track} tracks={tracks} />
+            displayedTracks.map((track) => (
+              <TrackList
+                key={track._id}
+                track={track}
+                tracks={displayedTracks}
+              />
             ))
           )}
         </div>

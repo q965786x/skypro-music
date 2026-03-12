@@ -1,6 +1,6 @@
 'use client';
 
-import { Centerblock } from '@/app/components/Centerblock/Centerblock';
+import Centerblock from '@/app/components/Centerblock/Centerblock';
 import { useInitAuth } from '@/hooks/useInitAuth';
 import { useAppSelector } from '@/store/store';
 import { useRouter } from 'next/navigation';
@@ -38,6 +38,7 @@ export default function PlaylistPage() {
   if (!isAuthReady) {
     return (
       <Centerblock
+        pagePlaylist={[]}
         tracks={[]}
         isLoading={true}
         errorRes={null}
@@ -53,6 +54,7 @@ export default function PlaylistPage() {
 
   return (
     <Centerblock
+      pagePlaylist={favoriteTracks}
       tracks={favoriteTracks}
       isLoading={fetchIsLoading}
       errorRes={null}

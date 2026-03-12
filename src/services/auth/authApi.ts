@@ -6,13 +6,11 @@ type createUserProps = {
   password: string;
 };
 
-{
-  /* type authUserReturn = {
+type loginUserReturn = {
   email: string;
   username: string;
   _id: number;
-}; */
-}
+};
 
 export const createUser = ({ email, password }: createUserProps) => {
   const data = {
@@ -30,7 +28,7 @@ export const createUser = ({ email, password }: createUserProps) => {
   });
 };
 
-export const loginUser = (data: createUserProps) => {
+export const loginUser = (data: createUserProps): Promise<loginUserReturn> => {
   return axios({
     method: 'post',
     url: BASE_URL + '/user/login/',

@@ -4,7 +4,7 @@ import { TrackType } from '@/sharedTypes/sharedTypes';
 import { useAppSelector } from '@/store/store';
 import { useParams } from 'next/navigation';
 import { useEffect, useState, useMemo } from 'react';
-import { Centerblock } from '@/app/components/Centerblock/Centerblock';
+import Centerblock from '@/app/components/Centerblock/Centerblock';
 import { AxiosError } from 'axios';
 import { getSelectionById } from '@/services/tracks/tracksApi';
 
@@ -93,6 +93,7 @@ export default function CategoryPage() {
   return (
     <>
       <Centerblock
+        pagePlaylist={allTracks}
         errorRes={errorRes}
         tracks={tracks}
         isLoading={isLoading}

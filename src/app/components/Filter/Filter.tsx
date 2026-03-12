@@ -1,70 +1,109 @@
 'use client';
 
-import { FilterType, TrackType } from '@/sharedTypes/sharedTypes';
+import { TrackType } from '@/sharedTypes/sharedTypes';
 import styles from './filter.module.css';
-import { useEffect, useState } from 'react';
-import FilterButtons from '../FilterButtons/FilterButtons';
-import FilterDropdown from '../FilterDropdown/FilterDropdown';
+import { useMemo, useState } from 'react';
+import { getUniqueValuesByKey } from '@/utils/helper';
+import {
+  setFilterAuthors,
+  setFilterGenres,
+  setFilterYear,
+} from '@/store/features/trackSlice';
+import { useAppDispatch, useAppSelector } from '@/store/store';
+import FilterItem from '../FilterItem/FilterItem';
 
-type FilterProps = {
+type filterProps = {
   tracks: TrackType[];
 };
 
-export default function Filter({ tracks }: FilterProps) {
-  const [activeFilter, setActiveFilter] = useState<FilterType | null>(null);
-  const [dropdownPosition, setDropdownPosition] = useState<{
-    top: number;
-    left: number;
-  } | null>(null);
+// Опции для фильтра по годам
+const yearOptions = [
+  { value: 'default', label: 'По умолчанию' },
+  { value: 'newest', label: 'Сначала новые' },
+  { value: 'oldest', label: 'Сначала старые' },
+];
 
-  const handleFilterClick = (filterType: FilterType, buttonRect: DOMRect) => {
-    console.log('Клик по фильтру:', filterType);
+export default function Filter({ tracks }: filterProps) {
+  const [activeFilter, setActiveFilter] = useState<null | string>(null);
+  const dispatch = useAppDispatch();
 
-    if (activeFilter === filterType) {
+  // Получаем текущие выбранные фильтры из Redux store
+  const selectedAuthors = useAppSelector(
+    (state) => state.tracks.filters.authors,
+  );
+  const selectedGenres = useAppSelector((state) => state.tracks.filters.genres);
+  const selectedYear = useAppSelector((state) => state.tracks.filters.years);
+
+  const changeActiveFilter = (nameFilter: string) => {
+    if (activeFilter === nameFilter) {
+      return setActiveFilter(null);
+    }
+    setActiveFilter(nameFilter);
+  };
+
+  // Получаем уникальные значения из ВСЕХ треков
+  const uniqAuthors = useMemo(
+    () => getUniqueValuesByKey(tracks, 'author'),
+    [tracks],
+  );
+
+  const uniqGenres = useMemo(
+    () => getUniqueValuesByKey(tracks, 'genre'),
+    [tracks],
+  );
+
+  const onSelectAuthor = (author: string) => {
+    dispatch(setFilterAuthors(author));
+  };
+
+  const onSelectGenres = (genre: string) => {
+    dispatch(setFilterGenres(genre));
+  };
+
+  const onSelectYear = (year: string) => {
+    const selectedOption = yearOptions.find((opt) => opt.label === year);
+    if (selectedOption) {
+      dispatch(setFilterYear(selectedOption.value));
       setActiveFilter(null);
-      setDropdownPosition(null);
-    } else {
-      setActiveFilter(filterType);
-      setDropdownPosition({
-        top: buttonRect.bottom + window.scrollY,
-        left: buttonRect.left + window.scrollX,
-      });
     }
   };
 
-  const handleCloseFilter = () => {
-    setActiveFilter(null);
-    setDropdownPosition(null);
-  };
-
-  // Обработка ресайза окна
-  useEffect(() => {
-    const handleResize = () => {
-      if (activeFilter) {
-        setDropdownPosition(null);
-        setActiveFilter(null);
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [activeFilter]);
+  // Формируем список годов для отображения
+  const yearLabels = yearOptions.map((opt) => opt.label);
 
   return (
-    <>
-      <FilterButtons
+    <div className={styles.centerblock__filter}>
+      <div className={styles.filter__title}>Искать по:</div>
+      <FilterItem
         activeFilter={activeFilter}
-        onFilterClick={handleFilterClick}
+        changeActiveFilter={changeActiveFilter}
+        nameFilter={'author'}
+        list={uniqAuthors}
+        titleFilter={'исполнителю'}
+        onSelect={onSelectAuthor}
+        selectedItems={selectedAuthors}
+        multiple={true}
       />
-
-      {activeFilter && dropdownPosition && (
-        <FilterDropdown
-          type={activeFilter}
-          tracks={tracks}
-          onClose={handleCloseFilter}
-          position={dropdownPosition}
-        />
-      )}
-    </>
+      <FilterItem
+        activeFilter={activeFilter}
+        changeActiveFilter={changeActiveFilter}
+        nameFilter={'year'}
+        list={yearLabels}
+        titleFilter={'году выпуска'}
+        onSelect={onSelectYear}
+        selectedItems={selectedYear ? [selectedYear] : []}
+        multiple={false}
+      />
+      <FilterItem
+        activeFilter={activeFilter}
+        changeActiveFilter={changeActiveFilter}
+        nameFilter={'genre'}
+        list={uniqGenres}
+        titleFilter={'жанру'}
+        onSelect={onSelectGenres}
+        selectedItems={selectedGenres}
+        multiple={true}
+      />
+    </div>
   );
 }
