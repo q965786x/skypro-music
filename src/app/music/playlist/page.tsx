@@ -1,6 +1,6 @@
 'use client';
 
-import Centerblock from '@/app/components/Centerblock/Centerblock';
+import Centerblock from '@/components/Centerblock/Centerblock';
 import { useInitAuth } from '@/hooks/useInitAuth';
 import { useResetFilters } from '@/hooks/useResetFilters';
 import { useAppSelector } from '@/store/store';

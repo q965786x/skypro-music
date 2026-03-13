@@ -4,7 +4,7 @@ import { TrackType } from '@/sharedTypes/sharedTypes';
 import { useAppSelector } from '@/store/store';
 import { useParams } from 'next/navigation';
 import { useEffect, useState, useMemo } from 'react';
-import Centerblock from '@/app/components/Centerblock/Centerblock';
+import Centerblock from '@/components/Centerblock/Centerblock';
 import { AxiosError } from 'axios';
 import { getSelectionById } from '@/services/tracks/tracksApi';
 import { useResetFilters } from '@/hooks/useResetFilters';

@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import styles from '@/app/components/Filter/filter.module.css';
+import styles from '@/components/Filter/filter.module.css';
 import { useEffect, useRef } from 'react';
 
 type filterItemProps = {

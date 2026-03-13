@@ -1,6 +1,6 @@
 'use client';
 
-import Centerblock from '@/app/components/Centerblock/Centerblock';
+import Centerblock from '@/components/Centerblock/Centerblock';
 import { useResetFilters } from '@/hooks/useResetFilters';
 import { TrackType } from '@/sharedTypes/sharedTypes';
 import { useAppSelector } from '@/store/store';
