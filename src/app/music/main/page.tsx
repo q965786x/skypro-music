@@ -1,11 +1,14 @@
 'use client';
 
 import Centerblock from '@/app/components/Centerblock/Centerblock';
+import { useResetFilters } from '@/hooks/useResetFilters';
 import { TrackType } from '@/sharedTypes/sharedTypes';
 import { useAppSelector } from '@/store/store';
 import { useEffect, useState } from 'react';
 
 export default function MainPage() {
+  useResetFilters(); // Сбрасываем фильтры при заходе на страницу
+
   const { fetchError, fetchIsLoading, allTracks, filteredTracks, filters } =
     useAppSelector((state) => state.tracks);
   const [playlist, setPlaylist] = useState<TrackType[]>([]);

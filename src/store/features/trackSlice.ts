@@ -163,6 +163,15 @@ const trackSlice = createSlice({
       state.filters.years = action.payload;
       state.filteredTracks = applyFilters(state);
     },
+    resetFilters: (state) => {
+      state.filters = {
+        authors: [],
+        genres: [],
+        years: 'По умолчанию',
+      };
+      state.filteredTracks = state.pagePlaylist; // Сбрасываем отфильтрованные треки
+      state.searchTerm = ''; // Сбрасываем поисковый запрос
+    },
   },
 });
 
@@ -184,5 +193,6 @@ export const {
   setFilterGenres,
   setFilterYear,
   setSearchTerm,
+  resetFilters,
 } = trackSlice.actions;
 export const trackSliceReducer = trackSlice.reducer;

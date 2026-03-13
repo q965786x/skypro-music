@@ -7,6 +7,7 @@ import { useEffect, useState, useMemo } from 'react';
 import Centerblock from '@/app/components/Centerblock/Centerblock';
 import { AxiosError } from 'axios';
 import { getSelectionById } from '@/services/tracks/tracksApi';
+import { useResetFilters } from '@/hooks/useResetFilters';
 
 // Данные для отображения названий подборок
 const selectionTitles: Record<string, string> = {
@@ -24,14 +25,20 @@ type SelectionResponse = {
 };
 
 export default function CategoryPage() {
+  useResetFilters(); // Сбрасываем фильтры при заходе на страницу
+
   const params = useParams<{ id: string }>();
-  const { allTracks, fetchIsLoading } = useAppSelector((state) => state.tracks);
+  const { allTracks, fetchIsLoading, filteredTracks, filters } = useAppSelector(
+    (state) => state.tracks,
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [errorRes, setErrorRes] = useState<string | null>(null);
   const [title, setTitle] = useState('');
-  const [tracks, setTracks] = useState<TrackType[]>([]);
+  const [categoryTracks, setCategoryTracks] = useState<TrackType[]>([]); // Треки из категории
+  const [displayTracks, setDisplayTracks] = useState<TrackType[]>([]); // Треки для отображения (с учетом фильтров)
   const id = params.id;
 
+  // Получаем треки категории
   useEffect(() => {
     const fetchCategoryTracks = async () => {
       if (!id) return;
@@ -49,10 +56,11 @@ export default function CategoryPage() {
 
         // Фильтруем треки по ID из подборки
         if (allTracks.length > 0 && selectionData.items) {
-          const filteredTracks = allTracks.filter((track) =>
+          const filtered = allTracks.filter((track) =>
             selectionData.items.includes(track._id),
           );
-          setTracks(filteredTracks);
+          setCategoryTracks(filtered);
+          setDisplayTracks(filtered); // Изначально показываем все треки категории
         }
       } catch (error) {
         if (error instanceof AxiosError) {
@@ -79,23 +87,64 @@ export default function CategoryPage() {
     }
   }, [id, allTracks, fetchIsLoading]);
 
+  // Применяем фильтры к трекам категории
+  useEffect(() => {
+    if (categoryTracks.length === 0) return;
+
+    let filtered = [...categoryTracks];
+
+    // Фильтр по авторам
+    if (filters.authors.length > 0) {
+      filtered = filtered.filter((track) =>
+        filters.authors.includes(track.author),
+      );
+    }
+
+    // Фильтр по жанрам
+    if (filters.genres.length > 0) {
+      filtered = filtered.filter((track) =>
+        filters.genres.some((genre) => track.genre.includes(genre)),
+      );
+    }
+
+    // Сортировка по годам
+    if (filters.years && filters.years !== 'По умолчанию') {
+      filtered = [...filtered].sort((a, b) => {
+        if (filters.years === 'Сначала новые') {
+          return (
+            new Date(b.release_date).getTime() -
+            new Date(a.release_date).getTime()
+          );
+        } else if (filters.years === 'Сначала старые') {
+          return (
+            new Date(a.release_date).getTime() -
+            new Date(b.release_date).getTime()
+          );
+        }
+        return 0;
+      });
+    }
+
+    setDisplayTracks(filtered);
+  }, [categoryTracks, filters]);
+
   // Мемоизируем отображение для оптимизации
   const content = useMemo(
     () => ({
-      tracks,
+      tracks: displayTracks,
       isLoading,
       errorRes,
       title: title || 'Загрузка...',
     }),
-    [tracks, isLoading, errorRes, title],
+    [displayTracks, isLoading, errorRes, title],
   );
 
   return (
     <>
       <Centerblock
-        pagePlaylist={allTracks}
+        pagePlaylist={categoryTracks}
         errorRes={errorRes}
-        tracks={tracks}
+        tracks={displayTracks} // Отображаем треки с учетом фильтров
         isLoading={isLoading}
         title={title}
       />

@@ -4,7 +4,6 @@ import styles from './centerblock.module.css';
 import classnames from 'classnames';
 import Search from '../Search/Search';
 import { TrackType } from '@/sharedTypes/sharedTypes';
-import { data } from '@/data';
 import TrackList from '../Tracklist/Tracklist';
 import Filter from '../Filter/Filter';
 import { useEffect, useMemo } from 'react';
@@ -12,11 +11,11 @@ import { setPagePlaylist } from '@/store/features/trackSlice';
 import { useAppDispatch, useAppSelector } from '@/store/store';
 
 type centerBlockProps = {
-  tracks: TrackType[];
+  tracks: TrackType[]; // Отображаемые треки (с учетом фильтров)
   isLoading: boolean;
   errorRes: string | null;
   title: string;
-  pagePlaylist: TrackType[];
+  pagePlaylist: TrackType[]; // Все треки текущей страницы (для поиска)
 };
 
 export default function Centerblock({
@@ -29,13 +28,14 @@ export default function Centerblock({
   const dispatch = useAppDispatch();
   const searchTerm = useAppSelector((state) => state.tracks.searchTerm);
 
+  // Устанавливаем pagePlaylist при загрузке
   useEffect(() => {
     if (!isLoading && !errorRes && pagePlaylist.length > 0) {
       dispatch(setPagePlaylist(pagePlaylist));
     }
   }, [isLoading, errorRes, pagePlaylist, dispatch]);
 
-  // Применяем поиск ко ВСЕМ трекам (pagePlaylist)
+  // Применяем поиск к трекам текущей страницы (pagePlaylist)
   const searchedTracks = useMemo(() => {
     if (searchTerm.length >= 2 && pagePlaylist.length > 0) {
       const searchLower = searchTerm.toLowerCase();
@@ -49,7 +49,7 @@ export default function Centerblock({
   }, [searchTerm, pagePlaylist]);
 
   // Определяем, какие треки показывать:
-  // - Если есть поисковый запрос, показываем результаты поиска по всем трекам
+  // - Если есть поисковый запрос, показываем результаты поиска по pagePlaylist
   // - Если нет поиска, показываем отфильтрованные треки
   const displayedTracks = useMemo(() => {
     if (searchTerm.length >= 2) {
@@ -61,6 +61,7 @@ export default function Centerblock({
   return (
     <div className={styles.centerblock}>
       <Search />
+      {/* Передаем все треки страницы для фильтров */}
       <Filter tracks={pagePlaylist} />
       <h2 className={styles.centerblock__h2}>{title}</h2>
       <div className={styles.centerblock__content}>
