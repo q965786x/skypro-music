@@ -4,6 +4,7 @@ import { BASE_URL } from '../constants';
 type createUserProps = {
   email: string;
   password: string;
+  username: string;
 };
 
 type loginUserReturn = {

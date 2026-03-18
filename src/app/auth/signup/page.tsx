@@ -4,9 +4,9 @@ import Link from 'next/link';
 import styles from './signup.module.css';
 import classNames from 'classnames';
 import { ChangeEvent, useState } from 'react';
-import { regUser } from '@/services/reg/regApi';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
+import { createUser } from '@/services/auth/authApi';
 
 export default function Signup() {
   const router = useRouter();
@@ -85,7 +85,7 @@ export default function Signup() {
 
     try {
       // Отправляем запрос с username
-      const response = await regUser({
+      const response = await createUser({
         email,
         password,
         username,
@@ -104,25 +104,11 @@ export default function Signup() {
         }
       }
 
-      // После успешной регистрации можно сразу перенаправить на страницу входа
-      // или автоматически авторизовать пользователя
-
-      // Вариант 1: Перенаправление на страницу входа
-      // router.push('/auth/signin');
-
-      // Вариант 2: Автоматический вход и перенаправление на главную
-      // (если у вас есть функция автоматического входа после регистрации)
       try {
-        // Попытка автоматического входа
-        // const loginResponse = await authUser({ email, password });
-        // Сохраняем токены и данные
-        // router.push('/music/main');
       } catch (loginError) {
-        // Если автоматический вход не удался, перенаправляем на страницу входа
         router.push('/auth/signin?registered=true');
       }
 
-      // Для простоты пока используем вариант с перенаправлением на страницу входа
       router.push('/auth/signin?registered=true');
     } catch (error) {
       if (error instanceof AxiosError) {

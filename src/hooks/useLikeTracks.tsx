@@ -1,8 +1,6 @@
 import {
   addFavoriteTrack,
-  addLike,
   removeFavoriteTrack,
-  removeLike,
 } from '@/services/tracks/tracksApi';
 import { TrackType } from '@/sharedTypes/sharedTypes';
 import { addLikedTracks, removeLikedTracks } from '@/store/features/trackSlice';

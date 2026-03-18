@@ -1,5 +1,4 @@
 import { TrackType } from '@/sharedTypes/sharedTypes';
-import { current } from '@reduxjs/toolkit';
 
 export function getUniqueValuesByKey(
   arr: TrackType[],
@@ -43,7 +42,8 @@ export const getTimePanel = (
   currentTime: number,
   totalTime: number | undefined,
 ) => {
-  if (totalTime) {
+  if (totalTime !== undefined) {
     return `${formatTime(currentTime)} / ${formatTime(totalTime)}`;
   }
+  return undefined;
 };
