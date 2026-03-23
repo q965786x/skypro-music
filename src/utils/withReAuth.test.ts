@@ -1,147 +1,169 @@
 import { withReAuth } from './withReAuth';
 import { refreshToken } from '@/services/auth/authApi';
 import { setAccessToken } from '@/store/features/authSlice';
-import { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
-// Мокаем модули
+// Мокаем зависимости
 jest.mock('@/services/auth/authApi');
 jest.mock('@/store/features/authSlice');
 
-// Типы для моков
-type MockRefreshToken = jest.MockedFunction<typeof refreshToken>;
-type MockSetAccessToken = jest.MockedFunction<typeof setAccessToken>;
-
 describe('withReAuth', () => {
-  const mockDispatch = jest.fn();
-  const mockRefresh = 'test-refresh-token';
-  const mockApiFunction = jest.fn();
-
-  // Создаем базовый конфиг для Axios с правильными типами
-  const createMockConfig = (): InternalAxiosRequestConfig => {
-    const config: InternalAxiosRequestConfig = {
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      } as unknown as InternalAxiosRequestConfig['headers'],
-      method: 'get',
-      url: '/test',
-      data: undefined,
-      params: undefined,
-      timeout: 0,
-      withCredentials: false,
-      xsrfCookieName: 'XSRF-TOKEN',
-      xsrfHeaderName: 'X-XSRF-TOKEN',
-      maxContentLength: -1,
-      maxBodyLength: -1,
-      transitional: {
-        silentJSONParsing: true,
-        forcedJSONParsing: true,
-        clarifyTimeoutError: false,
-      },
-    };
-    return config;
-  };
+  let mockDispatch: jest.Mock;
+  let mockApiFunction: jest.Mock;
 
   beforeEach(() => {
+    mockDispatch = jest.fn();
+    mockApiFunction = jest.fn();
+
+    // Очищаем localStorage перед каждым тестом
+    localStorage.clear();
+
+    // Сбрасываем моки перед каждым тестом
     jest.clearAllMocks();
   });
 
-  it('успешно выполняет API функцию', async () => {
-    const expectedResult = { data: 'success' };
-    mockApiFunction.mockResolvedValue(expectedResult);
+  it('должен успешно выполнить запрос с существующим токеном', async () => {
+    const mockAccessToken = 'test-access-token';
+    const mockResponse = { data: 'success' };
 
-    const result = await withReAuth(mockApiFunction, mockRefresh, mockDispatch);
+    localStorage.setItem('access', mockAccessToken);
+    mockApiFunction.mockResolvedValue(mockResponse);
 
-    expect(result).toBe(expectedResult);
-    expect(mockApiFunction).toHaveBeenCalledWith('');
+    const result = await withReAuth(
+      mockApiFunction,
+      'test-refresh-token',
+      mockDispatch,
+    );
+
+    expect(mockApiFunction).toHaveBeenCalledWith(mockAccessToken);
+    expect(result).toEqual(mockResponse);
     expect(refreshToken).not.toHaveBeenCalled();
   });
 
-  it('обновляет токен при ошибке 401 и повторяет запрос', async () => {
-    const axiosError = new AxiosError();
-    Object.defineProperty(axiosError, 'response', {
-      value: {
-        status: 401,
-        data: {},
-        statusText: 'Unauthorized',
-        headers: {},
-        config: createMockConfig(),
-      },
-    });
+  it('должен обновить токен при 401 ошибке и повторить запрос', async () => {
+    const mockRefreshToken = 'test-refresh-token';
+    const newAccessToken = 'new-access-token';
+    const mockResponse = { data: 'success' };
 
+    localStorage.setItem('access', 'old-token');
+
+    // Первый вызов возвращает ошибку 401, второй - успех
     mockApiFunction
-      .mockRejectedValueOnce(axiosError)
-      .mockResolvedValueOnce({ data: 'success' });
+      .mockRejectedValueOnce({ response: { status: 401 } })
+      .mockResolvedValueOnce(mockResponse);
 
-    const newAccessToken = { access: 'new-token' };
-    (refreshToken as MockRefreshToken).mockResolvedValue(newAccessToken);
+    (refreshToken as jest.Mock).mockResolvedValue({ access: newAccessToken });
 
-    const result = await withReAuth(mockApiFunction, mockRefresh, mockDispatch);
+    const result = await withReAuth(
+      mockApiFunction,
+      mockRefreshToken,
+      mockDispatch,
+    );
 
-    expect(result).toEqual({ data: 'success' });
-    expect(refreshToken).toHaveBeenCalledWith(mockRefresh);
-    expect(setAccessToken).toHaveBeenCalledWith('new-token');
+    expect(refreshToken).toHaveBeenCalledWith(mockRefreshToken);
+    expect(setAccessToken).toHaveBeenCalledWith(newAccessToken);
     expect(mockApiFunction).toHaveBeenCalledTimes(2);
-    expect(mockApiFunction).toHaveBeenLastCalledWith('new-token');
+    expect(mockApiFunction).toHaveBeenLastCalledWith(newAccessToken);
+    expect(result).toEqual(mockResponse);
+    expect(localStorage.getItem('access')).toBe(newAccessToken);
   });
 
-  it('пробрасывает ошибку если нет refresh токена при 401', async () => {
-    const axiosError = new AxiosError();
-    Object.defineProperty(axiosError, 'response', {
-      value: {
-        status: 401,
-        data: {},
-        statusText: 'Unauthorized',
-        headers: {},
-        config: createMockConfig(),
-      },
-    });
+  it('должен выбросить ошибку, если нет refresh токена', async () => {
+    localStorage.setItem('access', 'old-token');
 
-    mockApiFunction.mockRejectedValue(axiosError);
+    // Создаем ошибку 401
+    const error401 = { response: { status: 401 } };
+    mockApiFunction.mockRejectedValue(error401);
 
+    // Ожидаем, что будет выброшена ошибка
     await expect(withReAuth(mockApiFunction, '', mockDispatch)).rejects.toThrow(
       'Нет refresh токена',
     );
+
+    // Проверяем, что refreshToken НЕ был вызван
+    expect(refreshToken).not.toHaveBeenCalled();
+
+    // Проверяем, что apiFunction был вызван один раз (и получил ошибку)
+    expect(mockApiFunction).toHaveBeenCalledTimes(1);
   });
 
-  it('пробрасывает ошибку если обновление токена не удалось', async () => {
-    const axiosError = new AxiosError();
-    Object.defineProperty(axiosError, 'response', {
-      value: {
-        status: 401,
-        data: {},
-        statusText: 'Unauthorized',
-        headers: {},
-        config: createMockConfig(),
-      },
-    });
+  it('должен очистить токены при ошибке обновления', async () => {
+    localStorage.setItem('access', 'old-token');
+    localStorage.setItem('refresh', 'old-refresh');
+    localStorage.setItem('username', 'test-user');
 
-    mockApiFunction.mockRejectedValue(axiosError);
-    (refreshToken as MockRefreshToken).mockRejectedValue(
-      new Error('Refresh failed'),
-    );
+    // Создаем ошибку 401
+    const error401 = { response: { status: 401 } };
+    mockApiFunction.mockRejectedValue(error401);
+
+    // Мокаем refreshToken с ошибкой
+    (refreshToken as jest.Mock).mockRejectedValue(new Error('Refresh failed'));
 
     await expect(
-      withReAuth(mockApiFunction, mockRefresh, mockDispatch),
+      withReAuth(mockApiFunction, 'old-refresh', mockDispatch),
     ).rejects.toThrow('Refresh failed');
+
+    // Проверяем, что refreshToken был вызван
+    expect(refreshToken).toHaveBeenCalledWith('old-refresh');
+
+    // Проверяем, что токены были очищены
+    expect(localStorage.getItem('access')).toBeNull();
+    expect(localStorage.getItem('refresh')).toBeNull();
+    expect(localStorage.getItem('username')).toBeNull();
   });
 
-  it('пробрасывает ошибку не 401', async () => {
-    const axiosError = new AxiosError();
-    Object.defineProperty(axiosError, 'response', {
-      value: {
-        status: 400,
-        data: {},
-        statusText: 'Bad Request',
-        headers: {},
-        config: createMockConfig(),
-      },
-    });
-
-    mockApiFunction.mockRejectedValue(axiosError);
+  it('должен пробросить ошибку, если статус не 401', async () => {
+    const error = {
+      response: { status: 500, data: { message: 'Server error' } },
+    };
+    mockApiFunction.mockRejectedValue(error);
 
     await expect(
-      withReAuth(mockApiFunction, mockRefresh, mockDispatch),
-    ).rejects.toBe(axiosError);
+      withReAuth(mockApiFunction, 'refresh-token', mockDispatch),
+    ).rejects.toEqual(error);
+
+    // Проверяем, что refreshToken НЕ был вызван
+    expect(refreshToken).not.toHaveBeenCalled();
+
+    // Проверяем, что apiFunction был вызван один раз
+    expect(mockApiFunction).toHaveBeenCalledTimes(1);
+  });
+
+  it('должен пробросить ошибку, если ошибка не имеет response', async () => {
+    const error = new Error('Network error');
+    mockApiFunction.mockRejectedValue(error);
+
+    await expect(
+      withReAuth(mockApiFunction, 'refresh-token', mockDispatch),
+    ).rejects.toEqual(error);
+
+    // Проверяем, что refreshToken НЕ был вызван
+    expect(refreshToken).not.toHaveBeenCalled();
+
+    // Проверяем, что apiFunction был вызван один раз
+    expect(mockApiFunction).toHaveBeenCalledTimes(1);
+  });
+
+  it('должен корректно обработать ситуацию, когда токен обновлен, но повторный запрос снова возвращает 401', async () => {
+    const mockRefreshToken = 'test-refresh-token';
+    const newAccessToken = 'new-access-token';
+
+    localStorage.setItem('access', 'old-token');
+
+    // Первый вызов - 401
+    // Второй вызов (с новым токеном) - снова 401
+    mockApiFunction
+      .mockRejectedValueOnce({ response: { status: 401 } })
+      .mockRejectedValueOnce({ response: { status: 401 } });
+
+    (refreshToken as jest.Mock).mockResolvedValue({ access: newAccessToken });
+
+    await expect(
+      withReAuth(mockApiFunction, mockRefreshToken, mockDispatch),
+    ).rejects.toEqual({ response: { status: 401 } });
+
+    expect(refreshToken).toHaveBeenCalledWith(mockRefreshToken);
+    expect(mockApiFunction).toHaveBeenCalledTimes(2);
+    expect(mockApiFunction).toHaveBeenNthCalledWith(1, 'old-token');
+    expect(mockApiFunction).toHaveBeenNthCalledWith(2, newAccessToken);
   });
 });

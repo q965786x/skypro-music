@@ -25,10 +25,9 @@ export const useLikeTrack = (track: TrackType | null): returnTypeHook => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Используем useCallback для оптимизации
   const toggleLike = useCallback(() => {
-    if (!access) {
-      setErrorMessage('Нет авторизации');
+    if (!access && !refresh) {
+      setErrorMessage('Нет авторизации. Пожалуйста, войдите в систему');
       return;
     }
 
@@ -65,6 +64,8 @@ export const useLikeTrack = (track: TrackType | null): returnTypeHook => {
         if (error instanceof AxiosError) {
           if (error.response?.status === 401) {
             setErrorMessage('Сессия истекла. Пожалуйста, войдите снова');
+
+            window.location.href = '/auth/signin';
           } else if (error.response) {
             setErrorMessage(
               error.response.data?.message || 'Ошибка при обновлении лайка',
@@ -74,6 +75,15 @@ export const useLikeTrack = (track: TrackType | null): returnTypeHook => {
           } else {
             setErrorMessage('Произошла неизвестная ошибка');
           }
+        } else if (error instanceof Error) {
+          if (error.message === 'Нет refresh токена') {
+            setErrorMessage('Сессия истекла. Пожалуйста, войдите снова');
+            window.location.href = '/auth/signin';
+          } else {
+            setErrorMessage(error.message);
+          }
+        } else {
+          setErrorMessage('Произошла неизвестная ошибка');
         }
       })
       .finally(() => {

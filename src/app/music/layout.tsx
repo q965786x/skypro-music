@@ -21,9 +21,13 @@ export default function MusicLayout({ children }: MusicLayoutProps) {
         <div className={styles.container}>
           <main className={styles.main}>
             <FetchingTracks />
-            <Navigation />
-            {children}
-            <Sidebar />
+            <div className={styles.main__nav}>
+              <Navigation />
+            </div>
+            <div className={styles.main__center}>{children}</div>
+            <div className={styles.main__sidebar}>
+              <Sidebar />
+            </div>
           </main>
           <Bar />
           <footer className="footer"></footer>

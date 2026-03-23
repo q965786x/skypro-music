@@ -18,9 +18,9 @@ type filterProps = {
 
 // Опции для фильтра по годам
 const yearOptions = [
-  { value: 'default', label: 'По умолчанию' },
-  { value: 'newest', label: 'Сначала новые' },
-  { value: 'oldest', label: 'Сначала старые' },
+  { value: 'По умолчанию', label: 'По умолчанию' },
+  { value: 'Сначала новые', label: 'Сначала новые' },
+  { value: 'Сначала старые', label: 'Сначала старые' },
 ];
 
 export default function Filter({ tracks }: filterProps) {

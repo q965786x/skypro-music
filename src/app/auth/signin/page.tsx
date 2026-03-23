@@ -50,10 +50,10 @@ export default function Signin() {
     }
 
     setIsLoading(true);
-    loginUser({ email, password })
+    loginUser({ email, password, username: email })
       .then(() => {
         dispatch(setUsername(email));
-        return getTokens({ email, password });
+        return getTokens({ email, password, username: email });
       })
       .then((res) => {
         dispatch(setAccessToken(res.access));

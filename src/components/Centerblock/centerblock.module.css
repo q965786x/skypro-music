@@ -4,7 +4,11 @@
   -ms-flex-positive: 3;
   flex-grow: 3;
   padding: 20px 40px 20px 111px;
-  position: relative; /* Добавляем для позиционирования dropdown */
+  position: relative; 
+  display: flex;
+  flex-direction: column;
+  height: 100%; 
+  overflow: hidden;
 }
 
 .centerblock__h2 {
@@ -15,45 +19,66 @@
   letter-spacing: -0.8px;
   margin-bottom: 45px;
   color: #ffffff;
+  flex-shrink: 0; 
 }
 
 .centerblock__content {
-  display: -webkit-box;
-  display: -ms-flexbox;
+  flex: 1;
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -ms-flex-direction: column;
   flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .content__title {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-  -ms-flex-direction: row;
   flex-direction: row;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
   align-items: center;
-  -webkit-box-pack: justify;
-  -ms-flex-pack: justify;
   justify-content: space-between;
   margin-bottom: 24px;
+  flex-shrink: 0;
+  gap: 16px; 
 }
 
 .content__playlist {
-  display: -webkit-box;
-  display: -ms-flexbox;
+  flex: 1;
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -ms-flex-direction: column;
   flex-direction: column;
   overflow-y: auto;
-  min-height: 300px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(182, 114, 255, 0.5) rgba(255, 255, 255, 0.05);
+  /* Добавляем отступ снизу для удобства скролла */
+  padding-bottom: 20px;
+  overflow-x: hidden;
+}
+
+/* Стили для скроллбара */
+.content__playlist::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.content__playlist::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+.content__playlist::-webkit-scrollbar-thumb {
+  background: rgba(182, 114, 255, 0.5);
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.content__playlist::-webkit-scrollbar-thumb:hover {
+  background: rgba(182, 114, 255, 0.7);
+}
+
+/* Для Firefox */
+@supports (scrollbar-width: auto) {
+  .content__playlist {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(182, 114, 255, 0.5) rgba(255, 255, 255, 0.05);
+  }
 }
 
 .playlistTitle__col {
@@ -64,6 +89,7 @@
   letter-spacing: 2px;
   color: #696969;
   text-transform: uppercase;
+  flex-shrink: 0;
 }
 
 .playlistTitle__svg {
@@ -74,19 +100,27 @@
 }
 
 .col01 {
-  width: 447px;
+  width: 40%; /* Трек */
+  min-width: 200px;
+  flex-shrink: 1;
 }
 
 .col02 {
-  width: 321px;
+  width: 25%; /* Исполнитель */
+  min-width: 150px;
+  flex-shrink: 1;
 }
 
 .col03 {
-  width: 245px;
+  width: 25%; /* Альбом */
+  min-width: 150px;
+  flex-shrink: 1;
 }
 
 .col04 {
-  width: 60px;
+  width: 10%; /* Время */
+  min-width: 60px;
+  flex-shrink: 0;
   text-align: end;
 }
 
@@ -119,4 +153,14 @@
   background-color: rgba(255, 107, 107, 0.1);
   border-radius: 8px;
   padding: 20px;
+}
+
+.content__empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  color: #ffffff;
+  font-size: 18px;
+  text-align: center;
 }

@@ -48,9 +48,6 @@ export default function Centerblock({
     return pagePlaylist;
   }, [searchTerm, pagePlaylist]);
 
-  // Определяем, какие треки показывать:
-  // - Если есть поисковый запрос, показываем результаты поиска по pagePlaylist
-  // - Если нет поиска, показываем отфильтрованные треки
   const displayedTracks = useMemo(() => {
     if (searchTerm.length >= 2) {
       return searchedTracks;
@@ -61,7 +58,6 @@ export default function Centerblock({
   return (
     <div className={styles.centerblock}>
       <Search />
-      {/* Передаем все треки страницы для фильтров */}
       <Filter tracks={pagePlaylist} />
       <h2 className={styles.centerblock__h2}>{title}</h2>
       <div className={styles.centerblock__content}>
@@ -81,6 +77,7 @@ export default function Centerblock({
             </svg>
           </div>
         </div>
+
         <div className={styles.content__playlist}>
           {errorRes ? (
             <span style={{ color: '#ff6b6b' }}>{errorRes}</span>
