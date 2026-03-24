@@ -18,5 +18,5 @@ export type ResCategoryApiType = {
 export type FilterType = 'author' | 'year' | 'genre';
 
 export type BarProps = {
-  currentTrack?: TrackType | null; // Добавляем проп для Bar
+  currentTrack?: TrackType | null;
 };

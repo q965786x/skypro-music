@@ -47,12 +47,10 @@
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: rgba(182, 114, 255, 0.5) rgba(255, 255, 255, 0.05);
-  /* Добавляем отступ снизу для удобства скролла */
   padding-bottom: 20px;
   overflow-x: hidden;
 }
 
-/* Стили для скроллбара */
 .content__playlist::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -73,7 +71,6 @@
   background: rgba(182, 114, 255, 0.7);
 }
 
-/* Для Firefox */
 @supports (scrollbar-width: auto) {
   .content__playlist {
     scrollbar-width: thin;
@@ -100,31 +97,30 @@
 }
 
 .col01 {
-  width: 40%; /* Трек */
+  width: 40%; 
   min-width: 200px;
   flex-shrink: 1;
 }
 
 .col02 {
-  width: 25%; /* Исполнитель */
+  width: 25%; 
   min-width: 150px;
   flex-shrink: 1;
 }
 
 .col03 {
-  width: 25%; /* Альбом */
+  width: 25%; 
   min-width: 150px;
   flex-shrink: 1;
 }
 
 .col04 {
-  width: 10%; /* Время */
+  width: 10%; 
   min-width: 60px;
   flex-shrink: 0;
   text-align: end;
 }
 
-/* Стили для состояния загрузки */
 .content__loading {
   display: flex;
   justify-content: center;
@@ -139,7 +135,6 @@
   animation: pulse 1.5s ease-in-out infinite;
 }
 
-/* Стили для состояния ошибки */
 .content__error {
   display: flex;
   flex-direction: column;

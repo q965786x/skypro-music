@@ -9,8 +9,8 @@ type filterItemProps = {
   list: string[];
   titleFilter: string;
   onSelect: (value: string) => void;
-  selectedItems?: string[]; // Массив выбранных элементов
-  multiple?: boolean; // Разрешен ли множественный выбор
+  selectedItems?: string[];
+  multiple?: boolean;
 };
 
 export default function FilterItem({
@@ -25,7 +25,6 @@ export default function FilterItem({
 }: filterItemProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  // Закрытие при клике вне компонента
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -44,7 +43,6 @@ export default function FilterItem({
     };
   }, [activeFilter, nameFilter, changeActiveFilter]);
 
-  // Закрытие по Escape
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && activeFilter === nameFilter) {
@@ -60,17 +58,14 @@ export default function FilterItem({
 
   const handleItemClick = (item: string) => {
     onSelect(item);
-    // Для одиночного выбора (годы) закрываем фильтр
+
     if (!multiple) {
       changeActiveFilter(nameFilter);
     }
-    // Для множественного выбора (авторы, жанры) НЕ закрываем
   };
 
-  // Проверяем, выбран ли элемент
   const isItemSelected = (item: string) => {
     if (nameFilter === 'year') {
-      // Для годов сравниваем с лейблами
       const yearMap: Record<string, string> = {
         default: 'По умолчанию',
         newest: 'Сначала новые',
@@ -81,7 +76,6 @@ export default function FilterItem({
     return selectedItems.includes(item);
   };
 
-  // Определяем, есть ли выбранные элементы в этом фильтре
   const hasSelectedItems = selectedItems.length > 0;
 
   return (
@@ -91,7 +85,7 @@ export default function FilterItem({
         [styles.filter__button_active]: activeFilter === nameFilter,
         [styles.filter__button_hasSelected]:
           hasSelectedItems && activeFilter !== nameFilter,
-      })} // Добавляем класс если есть выбранные
+      })}
       onClick={() => changeActiveFilter(nameFilter)}
       data-filter={nameFilter}
     >

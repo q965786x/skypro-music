@@ -2,21 +2,18 @@ import axios from 'axios';
 import { BASE_URL } from '../constants';
 import { ResCategoryApiType, TrackType } from '@/sharedTypes/sharedTypes';
 
-// Получить все треки
 export const getTracks = (): Promise<TrackType[]> => {
   return axios.get(BASE_URL + '/catalog/track/all/').then((res) => {
     return res.data.data;
   });
 };
 
-// Получить трек по id
 export const getTrackById = (id: number): Promise<TrackType> => {
   return axios.get(BASE_URL + `/catalog/track/${id}/`).then((res) => {
     return res.data.data;
   });
 };
 
-// Получить категории
 export const getCategories = (
   categoryId: string,
 ): Promise<ResCategoryApiType> => {
@@ -27,7 +24,6 @@ export const getCategories = (
   );
 };
 
-// Просмотреть избранное (требует авторизацию)
 export const getFavoriteTracks = (access: string): Promise<TrackType[]> => {
   return axios
     .get(BASE_URL + '/catalog/track/favorite/all/', {
@@ -38,7 +34,6 @@ export const getFavoriteTracks = (access: string): Promise<TrackType[]> => {
     .then((res) => res.data.data);
 };
 
-// Добавить трек в избранное по id (требует авторизацию)
 export const addFavoriteTrack = (access: string, id: number) => {
   return axios.post(
     BASE_URL + `/catalog/track/${id}/favorite/`,
@@ -51,7 +46,6 @@ export const addFavoriteTrack = (access: string, id: number) => {
   );
 };
 
-// Удалить трек из избранного по id (требует авторизацию)
 export const removeFavoriteTrack = (access: string, id: number) => {
   return axios.delete(BASE_URL + `/catalog/track/${id}/favorite/`, {
     headers: {
@@ -60,12 +54,10 @@ export const removeFavoriteTrack = (access: string, id: number) => {
   });
 };
 
-// Получить подборки
 export const getSelections = () => {
   return axios.get(BASE_URL + '/catalog/selection/all').then((res) => res.data);
 };
 
-// Получить подборку по id
 export const getSelectionById = (id: string) => {
   return axios
     .get(BASE_URL + `/catalog/selection/${id}/`)

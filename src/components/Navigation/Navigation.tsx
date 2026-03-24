@@ -13,6 +13,7 @@ export default function Navigation() {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const burgerRef = useRef<HTMLDivElement>(null);
 
   const toggleOpenMenu = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -24,15 +25,22 @@ export default function Navigation() {
     router.push('/auth/signin');
   };
 
-  // Закрытие меню при клике вне его
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node) &&
+        burgerRef.current &&
+        !burgerRef.current.contains(event.target as Node)
+      ) {
         setIsMenuOpen(false);
       }
     };
 
-    // Закрытие меню при нажатии Escape
     const handleEscapeKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && isMenuOpen) {
         setIsMenuOpen(false);
@@ -62,13 +70,17 @@ export default function Navigation() {
           alt={'logo'}
         />
       </Link>
-      {/* Бургер-меню */}
-      <div className={styles.nav__burger} onClick={toggleOpenMenu}>
+
+      <div
+        ref={burgerRef}
+        className={styles.nav__burger}
+        onClick={toggleOpenMenu}
+      >
         <span className={styles.burger__line}></span>
         <span className={styles.burger__line}></span>
         <span className={styles.burger__line}></span>
       </div>
-      {/* Меню */}
+
       <div
         ref={menuRef}
         className={`${styles.nav__menu} ${isMenuOpen ? styles.nav__menu_open : ''}`}
@@ -78,7 +90,7 @@ export default function Navigation() {
             <Link
               href="/music/main"
               className={styles.menu__link}
-              onClick={() => setIsMenuOpen(false)}
+              onClick={closeMenu}
             >
               Главное
             </Link>
@@ -87,7 +99,7 @@ export default function Navigation() {
             <Link
               href="/music/playlist"
               className={styles.menu__link}
-              onClick={() => setIsMenuOpen(false)}
+              onClick={closeMenu}
             >
               Мой плейлист
             </Link>

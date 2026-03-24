@@ -7,14 +7,13 @@ import { useAppSelector } from '@/store/store';
 import { useEffect, useState } from 'react';
 
 export default function MainPage() {
-  useResetFilters(); // Сбрасываем фильтры при заходе на страницу
+  useResetFilters();
 
   const { fetchError, fetchIsLoading, allTracks, filteredTracks, filters } =
     useAppSelector((state) => state.tracks);
   const [playlist, setPlaylist] = useState<TrackType[]>([]);
 
   useEffect(() => {
-    // Это треки после применения фильтров (для обычного отображения)
     const currentPlaylist =
       filters.authors.length || filters.genres.length
         ? filteredTracks

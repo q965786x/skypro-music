@@ -14,7 +14,7 @@ export default function Sidebar() {
 
   const handleLogout = () => {
     dispatch(clearUser());
-    // Проверяем текущий путь
+
     const currentPath = window.location.pathname;
     if (currentPath.includes('/music/playlist')) {
       router.push('/music/main');

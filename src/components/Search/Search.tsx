@@ -11,7 +11,6 @@ export default function Search() {
 
   const searchTerm = useAppSelector((state) => state.tracks.searchTerm);
 
-  // Синхронизируем локальный стейт с глобальным
   useEffect(() => {
     setSearchInput(searchTerm);
   }, [searchTerm]);
@@ -20,7 +19,6 @@ export default function Search() {
     const value = e.target.value;
     setSearchInput(value);
 
-    // Отправляем в store только если длина >= 2 или пустая строка
     if (value.length === 0 || value.length >= 2) {
       dispatch(setSearchTerm(value));
     }

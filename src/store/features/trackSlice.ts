@@ -20,8 +20,8 @@ export type initialStateType = {
     genres: string[];
     years: string;
   };
-  searchTerm: string; // Добавляем поле для поискового запроса
-  searchedTracks: TrackType[]; // Добавляем поле для отфильтрованных по поиску треков
+  searchTerm: string;
+  searchedTracks: TrackType[];
 };
 
 const initialState: initialStateType = {
@@ -46,7 +46,6 @@ const initialState: initialStateType = {
   searchedTracks: [],
 };
 
-//Вспомогательная функция для получения следующего или предыдущего трека
 const getNextOrPrevTrack = (
   playlist: TrackType[],
   currentTrack: TrackType | null,
@@ -169,8 +168,8 @@ const trackSlice = createSlice({
         genres: [],
         years: 'По умолчанию',
       };
-      state.filteredTracks = state.pagePlaylist; // Сбрасываем отфильтрованные треки
-      state.searchTerm = ''; // Сбрасываем поисковый запрос
+      state.filteredTracks = state.pagePlaylist;
+      state.searchTerm = '';
     },
   },
 });

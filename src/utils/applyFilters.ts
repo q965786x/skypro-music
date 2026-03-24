@@ -3,7 +3,6 @@ import { initialStateType } from '@/store/features/trackSlice';
 export const applyFilters = (state: initialStateType) => {
   let filteredPlaylist = state.pagePlaylist;
 
-  // Применяем поиск по первым двум буквам
   if (state.searchTerm && state.searchTerm.length >= 2) {
     const searchLower = state.searchTerm.toLowerCase();
     filteredPlaylist = filteredPlaylist.filter(
@@ -13,21 +12,18 @@ export const applyFilters = (state: initialStateType) => {
     );
   }
 
-  // Применяем фильтры по авторам
   if (state.filters.authors.length) {
     filteredPlaylist = filteredPlaylist.filter((track) => {
       return state.filters.authors.includes(track.author);
     });
   }
 
-  // Применяем фильтры по жанрам
   if (state.filters.genres.length) {
     filteredPlaylist = filteredPlaylist.filter((track) => {
       return state.filters.genres.some((el) => track.genre.includes(el));
     });
   }
 
-  // Применяем фильтр по годам (сортировка)
   if (state.filters.years && state.filters.years !== 'По умолчанию') {
     filteredPlaylist = [...filteredPlaylist].sort((a, b) => {
       if (state.filters.years === 'Сначала новые') {

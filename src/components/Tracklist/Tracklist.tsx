@@ -31,11 +31,9 @@ export default function TrackList({ track, tracks }: TrackListProps) {
     (e: React.MouseEvent, track: TrackType) => {
       e.stopPropagation();
 
-      // Если это тот же трек, просто переключаем воспроизведение
       if (currentTrack?._id === track._id) {
         dispatch(setIsPlaying(!isPlay));
       } else {
-        // Если новый трек, устанавливаем его и начинаем воспроизведение
         dispatch(setCurrentTrack(track));
         dispatch(setCurrentPlaylist(tracks));
         dispatch(setIsPlaying(true));
@@ -55,7 +53,6 @@ export default function TrackList({ track, tracks }: TrackListProps) {
 
       await toggleLike();
 
-      // Показываем ошибку если есть
       if (errorMessage) {
         setShowError(true);
         setTimeout(() => setShowError(false), 3000);

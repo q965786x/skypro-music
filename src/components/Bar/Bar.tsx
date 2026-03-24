@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from '@/store/store';
 import styles from './bar.module.css';
 import classnames from 'classnames';
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   setIsPlaying,
   setNextTrack,
@@ -37,7 +37,7 @@ export default function Bar() {
   );
   const isShuffle = useAppSelector((state) => state.tracks.isShuffle);
 
-  const getCurrentPlaylistInfo = () => {
+  const getCurrentPlaylistInfo = useCallback(() => {
     const activePlaylist = isShuffle ? shuffledPlaylist : currentPlaylist;
 
     if (!currentTrack || activePlaylist.length === 0) {
@@ -49,10 +49,10 @@ export default function Bar() {
     );
 
     return { playlist: activePlaylist, index };
-  };
+  }, [currentTrack, currentPlaylist, shuffledPlaylist, isShuffle]);
 
   useEffect(() => {
-    const { playlist: currentPlaylistInfo, index } = getCurrentPlaylistInfo();
+    const { playlist: activePlaylist, index } = getCurrentPlaylistInfo();
 
     if (!currentTrack || index === -1) {
       setIsFirstTrack(true);
@@ -61,14 +61,14 @@ export default function Bar() {
     }
 
     setIsFirstTrack(index <= 0);
-    setIsLastTrack(index >= currentPlaylist.length - 1);
-  }, [currentTrack, currentPlaylist, shuffledPlaylist, isShuffle]);
+    setIsLastTrack(index >= activePlaylist.length - 1);
+  }, [currentTrack, getCurrentPlaylistInfo]);
 
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = volume;
     }
-  }, []);
+  }, [volume]);
 
   useEffect(() => {
     setIsLoadedTrack(false);
@@ -86,9 +86,7 @@ export default function Bar() {
         } else {
           audioRef.current.pause();
         }
-      } catch (error) {
-        // Если произошла ошибка воспроизведения, обновляем состояние
-        console.error('Ошибка воспроизведения:', error);
+      } catch {
         dispatch(setIsPlaying(false));
       }
     };
@@ -111,8 +109,7 @@ export default function Bar() {
       try {
         await audioRef.current.play();
         dispatch(setIsPlaying(true));
-      } catch (error) {
-        console.error('Не удалось воспроизвести трек:', error);
+      } catch {
         dispatch(setIsPlaying(false));
       }
     }
@@ -167,15 +164,15 @@ export default function Bar() {
   };
 
   const onNextTrack = () => {
-    const { playlist: currentPlaylist, index } = getCurrentPlaylistInfo();
+    const { index, playlist } = getCurrentPlaylistInfo();
 
-    if (index < currentPlaylist.length - 1) {
+    if (index < playlist.length - 1) {
       dispatch(setNextTrack());
     }
   };
 
   const onPrevTrack = () => {
-    const { playlist: currentPlaylist, index } = getCurrentPlaylistInfo();
+    const { index } = getCurrentPlaylistInfo();
 
     if (index > 0) {
       dispatch(setPrevTrack());
@@ -191,14 +188,16 @@ export default function Bar() {
       return;
     }
 
-    const { playlist: currentPlaylistInfo, index } = getCurrentPlaylistInfo();
+    const { index, playlist } = getCurrentPlaylistInfo();
 
-    if (index === currentPlaylistInfo.length - 1) {
+    if (index === playlist.length - 1) {
       dispatch(setIsPlaying(false));
     } else {
       dispatch(setNextTrack());
     }
   };
+
+  if (!currentTrack) return null;
 
   return (
     <div className={styles.bar}>
@@ -211,7 +210,7 @@ export default function Bar() {
         onLoadedMetadata={onLoadedMetadata}
         onCanPlay={onCanPlay}
         onEnded={handleTrackEnded}
-        preload="auto" // Добавляем preload для более быстрой загрузки
+        preload="auto"
       />
       <div className={styles.bar__content}>
         <ProgressBar
@@ -352,7 +351,7 @@ export default function Bar() {
                 />
               </div>
             </div>
-            {/* Блок с временем трека */}
+            // eslint-disable-next-line prettier/prettier
             <div className={styles.player__timeDisplay}>
               <span className={styles.timeDisplay__text}>
                 {getTimePanel(currentTime, duration)}

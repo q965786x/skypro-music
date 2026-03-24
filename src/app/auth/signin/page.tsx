@@ -42,7 +42,6 @@ export default function Signin() {
       return setErrorMessage('Заполните все поля');
     }
 
-    // Простая валидация email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setErrorMessage('Введите корректный email');

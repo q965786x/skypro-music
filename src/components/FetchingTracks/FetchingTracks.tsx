@@ -12,7 +12,6 @@ import {
 } from '@/store/features/trackSlice';
 import { withReAuth } from '@/utils/withReAuth';
 import { useRouter } from 'next/navigation';
-import { clearUser } from '@/store/features/authSlice';
 
 export default function FetchingTracks() {
   const dispatch = useAppDispatch();
@@ -24,14 +23,11 @@ export default function FetchingTracks() {
     dispatch(setFetchIsLoading(true));
 
     try {
-      // Загружаем все треки (не требует авторизации)
       const tracks = await getTracks();
       dispatch(setAllTracks(tracks));
 
-      // Если пользователь авторизован, загружаем избранные треки
       if (access && refresh) {
         try {
-          // Используем withReAuth для автоматического обновления токена при 401
           const favoriteTracks = await withReAuth(
             async (newToken) => {
               const token = newToken || access;

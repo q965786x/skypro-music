@@ -11,11 +11,11 @@ import { setPagePlaylist } from '@/store/features/trackSlice';
 import { useAppDispatch, useAppSelector } from '@/store/store';
 
 type centerBlockProps = {
-  tracks: TrackType[]; // Отображаемые треки (с учетом фильтров)
+  tracks: TrackType[];
   isLoading: boolean;
   errorRes: string | null;
   title: string;
-  pagePlaylist: TrackType[]; // Все треки текущей страницы (для поиска)
+  pagePlaylist: TrackType[];
 };
 
 export default function Centerblock({
@@ -28,14 +28,12 @@ export default function Centerblock({
   const dispatch = useAppDispatch();
   const searchTerm = useAppSelector((state) => state.tracks.searchTerm);
 
-  // Устанавливаем pagePlaylist при загрузке
   useEffect(() => {
     if (!isLoading && !errorRes && pagePlaylist.length > 0) {
       dispatch(setPagePlaylist(pagePlaylist));
     }
   }, [isLoading, errorRes, pagePlaylist, dispatch]);
 
-  // Применяем поиск к трекам текущей страницы (pagePlaylist)
   const searchedTracks = useMemo(() => {
     if (searchTerm.length >= 2 && pagePlaylist.length > 0) {
       const searchLower = searchTerm.toLowerCase();

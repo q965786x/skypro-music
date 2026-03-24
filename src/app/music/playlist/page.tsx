@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function PlaylistPage() {
-  useResetFilters(); // Сбрасываем фильтры при заходе на страницу
+  useResetFilters();
 
   const router = useRouter();
   const [isAuthReady, setIsAuthReady] = useState(false);

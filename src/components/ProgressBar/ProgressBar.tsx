@@ -1,7 +1,7 @@
 import styles from './progressbar.module.css';
 import { ChangeEvent } from 'react';
 
-type progressBarProp = {
+type ProgressBarProps = {
   max: number;
   value: number;
   step: number;
@@ -15,7 +15,7 @@ export default function ProgressBar({
   step,
   onChange,
   readOnly,
-}: progressBarProp) {
+}: ProgressBarProps) {
   return (
     <input
       className={styles.styledProgressInput}

@@ -16,22 +16,19 @@ export const withReAuth = async <T>(
     const axiosError = error as AxiosError;
 
     if (axiosError.response?.status === 401) {
+      if (!refresh) {
+        throw new Error('Нет refresh токена');
+      }
+
       try {
-        if (!refresh) {
-          throw new Error('Нет refresh токена');
-        }
-
         const newAccessToken = await refreshToken(refresh);
-
         localStorage.setItem('access', newAccessToken.access);
         dispatch(setAccessToken(newAccessToken.access));
-
         return await apiFunction(newAccessToken.access);
       } catch (refreshError) {
         localStorage.removeItem('access');
         localStorage.removeItem('refresh');
         localStorage.removeItem('username');
-
         throw refreshError;
       }
     }

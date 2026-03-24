@@ -37,7 +37,6 @@ export default function Signup() {
     setErrorMessage('');
   };
 
-  // Функция валидации формы
   const validateForm = (): string | null => {
     if (
       !email.trim() ||
@@ -74,7 +73,6 @@ export default function Signup() {
     e.preventDefault();
     setErrorMessage('');
 
-    // Валидация формы
     const validationError = validateForm();
     if (validationError) {
       setErrorMessage(validationError);
@@ -84,19 +82,13 @@ export default function Signup() {
     setIsLoading(true);
 
     try {
-      // Отправляем запрос с username
       const response = await createUser({
         email,
         password,
         username,
       });
 
-      // Успешная регистрация
-      console.log('Успешная регистрация:', response.data);
-
-      // Сохраняем данные пользователя (например, в localStorage или в контексте)
       if (response.data) {
-        // Пример сохранения данных пользователя
         if (response.data.result) {
           localStorage.setItem('user', JSON.stringify(response.data.result));
         } else {
@@ -119,7 +111,6 @@ export default function Signup() {
         } else if (error.response) {
           switch (error.response.status) {
             case 400:
-              // Обрабатываем ошибки валидации от сервера
               if (error.response.data?.message) {
                 setErrorMessage(error.response.data.message);
               } else if (error.response.data?.email) {
@@ -135,7 +126,6 @@ export default function Signup() {
               }
               break;
             case 403:
-              // Конфликт - email уже занят
               setErrorMessage(
                 error.response.data?.message ||
                   'Пользователь с таким email уже существует',
