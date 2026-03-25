@@ -11,10 +11,39 @@
   margin: 0 auto;
   position: relative;
   background-color: #181818;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
 }
 
 .main {
+  flex: 1;
   display: flex;
-  height: calc(100vh - 73px); /* Вычитаем высоту Bar */
+  min-height: 0; 
   overflow: hidden;
+  overflow-x: hidden;
+}
+
+.main__nav {
+  width: 244px;
+  flex-shrink: 0;
+  background-color: #181818;
+  padding: 0 36px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.main__center {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  overflow-x: hidden;
+}
+
+.main__sidebar {
+  width: 418px;
+  flex-shrink: 0;
+  padding: 20px 90px 20px 78px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }

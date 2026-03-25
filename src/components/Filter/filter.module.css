@@ -1,0 +1,140 @@
+.centerblock__filter {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  margin-bottom: 51px;
+  position: relative;
+}
+
+.filter__title {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  margin-right: 15px;
+  color: #ffffff;
+}
+
+.filter__button {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  border: 1px solid #ffffff;
+  border-radius: 60px;
+  padding: 6px 20px;
+  color: #ffffff;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.filter__button:hover {
+  border-color: #d9b6ff;
+  color: #d9b6ff;
+}
+
+.filter__button:active {
+  border-color: #ad61ff;
+  color: #ad61ff;
+}
+
+/* Стиль для активной кнопки (когда открыт выпадающий список) */
+.filter__button_active {
+  border-color: #ad61ff;
+  color: #ad61ff;
+  background-color: rgba(173, 97, 255, 0.1);
+}
+
+/* Стиль для кнопки с выбранными фильтрами (когда есть выбранные элементы, но список закрыт) */
+.filter__button_hasSelected {
+  border-color: #B672FF;
+  color: #B672FF;
+}
+
+.filter__button:not(:last-child) {
+  margin-right: 10px;
+}
+
+/* Стили для выпадающего списка */
+.filter__wrapper {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  z-index: 1000;
+  background: #313131;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  min-width: 248px;
+  max-height: 305px;
+  overflow: hidden;
+}
+
+/* Специальные размеры для фильтра по годам */
+.filter__button[data-filter="year"] .filter__wrapper {
+  min-width: 221px;
+  max-height: 196px;
+}
+
+.filter__list {
+  list-style: none;
+  margin: 0;
+  padding: 8px 0;
+  max-height: inherit;
+  overflow-y: auto;
+}
+
+/* Стили для скроллбара */
+.filter__list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.filter__list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.filter__list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+}
+
+.filter__list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 24px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #ffffff;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 24px;
+}
+
+.filter__list li:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #d9b6ff;
+}
+
+/* Стиль для выбранного элемента в списке - фиолетовый цвет и подчеркивание */
+.filter__listItem_selected {
+  color: #B672FF !important;
+  text-decoration: underline;
+  text-decoration-color: #B672FF;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+.filter__listItem_selected:hover {
+  color: #B672FF !important;
+  background-color: rgba(173, 97, 255, 0.15);
+}

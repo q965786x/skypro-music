@@ -4,9 +4,9 @@ import Link from 'next/link';
 import styles from './signup.module.css';
 import classNames from 'classnames';
 import { ChangeEvent, useState } from 'react';
-import { regUser } from '@/services/reg/regApi';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
+import { createUser } from '@/services/auth/authApi';
 
 export default function Signup() {
   const router = useRouter();
@@ -37,7 +37,6 @@ export default function Signup() {
     setErrorMessage('');
   };
 
-  // Функция валидации формы
   const validateForm = (): string | null => {
     if (
       !email.trim() ||
@@ -74,7 +73,6 @@ export default function Signup() {
     e.preventDefault();
     setErrorMessage('');
 
-    // Валидация формы
     const validationError = validateForm();
     if (validationError) {
       setErrorMessage(validationError);
@@ -84,19 +82,13 @@ export default function Signup() {
     setIsLoading(true);
 
     try {
-      // Отправляем запрос с username
-      const response = await regUser({
+      const response = await createUser({
         email,
         password,
         username,
       });
 
-      // Успешная регистрация
-      console.log('Успешная регистрация:', response.data);
-
-      // Сохраняем данные пользователя (например, в localStorage или в контексте)
       if (response.data) {
-        // Пример сохранения данных пользователя
         if (response.data.result) {
           localStorage.setItem('user', JSON.stringify(response.data.result));
         } else {
@@ -104,25 +96,11 @@ export default function Signup() {
         }
       }
 
-      // После успешной регистрации можно сразу перенаправить на страницу входа
-      // или автоматически авторизовать пользователя
-
-      // Вариант 1: Перенаправление на страницу входа
-      // router.push('/auth/signin');
-
-      // Вариант 2: Автоматический вход и перенаправление на главную
-      // (если у вас есть функция автоматического входа после регистрации)
       try {
-        // Попытка автоматического входа
-        // const loginResponse = await authUser({ email, password });
-        // Сохраняем токены и данные
-        // router.push('/music/main');
       } catch (loginError) {
-        // Если автоматический вход не удался, перенаправляем на страницу входа
         router.push('/auth/signin?registered=true');
       }
 
-      // Для простоты пока используем вариант с перенаправлением на страницу входа
       router.push('/auth/signin?registered=true');
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -133,7 +111,6 @@ export default function Signup() {
         } else if (error.response) {
           switch (error.response.status) {
             case 400:
-              // Обрабатываем ошибки валидации от сервера
               if (error.response.data?.message) {
                 setErrorMessage(error.response.data.message);
               } else if (error.response.data?.email) {
@@ -149,7 +126,6 @@ export default function Signup() {
               }
               break;
             case 403:
-              // Конфликт - email уже занят
               setErrorMessage(
                 error.response.data?.message ||
                   'Пользователь с таким email уже существует',

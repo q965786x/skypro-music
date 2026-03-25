@@ -1,12 +1,15 @@
 'use client';
 
-import { Centerblock } from '@/app/components/Centerblock/Centerblock';
+import Centerblock from '@/components/Centerblock/Centerblock';
 import { useInitAuth } from '@/hooks/useInitAuth';
+import { useResetFilters } from '@/hooks/useResetFilters';
 import { useAppSelector } from '@/store/store';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function PlaylistPage() {
+  useResetFilters();
+
   const router = useRouter();
   const [isAuthReady, setIsAuthReady] = useState(false);
 
@@ -17,9 +20,7 @@ export default function PlaylistPage() {
   );
   const { access } = useAppSelector((state) => state.auth);
 
-  // Ждем, пока хук useInitAuth выполнится и обновит состояние
   useEffect(() => {
-    // Небольшая задержка, чтобы дать время на выполнение initAuth
     const timer = setTimeout(() => {
       setIsAuthReady(true);
     }, 100);
@@ -27,17 +28,16 @@ export default function PlaylistPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Проверка авторизации
   useEffect(() => {
     if (isAuthReady && !access) {
       router.push('/auth/signin');
     }
   }, [isAuthReady, access, router]);
 
-  // Показываем загрузку, пока не готовы данные авторизации
   if (!isAuthReady) {
     return (
       <Centerblock
+        pagePlaylist={[]}
         tracks={[]}
         isLoading={true}
         errorRes={null}
@@ -46,13 +46,13 @@ export default function PlaylistPage() {
     );
   }
 
-  // Если не авторизован, не рендерим контент
   if (!access) {
     return null;
   }
 
   return (
     <Centerblock
+      pagePlaylist={favoriteTracks}
       tracks={favoriteTracks}
       isLoading={fetchIsLoading}
       errorRes={null}

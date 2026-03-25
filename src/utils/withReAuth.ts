@@ -8,35 +8,31 @@ export const withReAuth = async <T>(
   refresh: string,
   dispatch: AppDispatch,
 ): Promise<T> => {
+  const currentAccessToken = localStorage.getItem('access') || '';
+
   try {
-    //Пытаемся выполнить запрос
-    return await apiFunction('');
+    return await apiFunction(currentAccessToken);
   } catch (error) {
     const axiosError = error as AxiosError;
 
-    // Если ошибка 401 (не авторизован), обновляем токен и повторяем запрос
     if (axiosError.response?.status === 401) {
+      if (!refresh) {
+        throw new Error('Нет refresh токена');
+      }
+
       try {
-        if (!refresh) {
-          throw new Error('Нет refresh токена');
-        }
-
-        console.log('Обновляем токен...');
         const newAccessToken = await refreshToken(refresh);
-        console.log('Токен обновлен успешно');
-
+        localStorage.setItem('access', newAccessToken.access);
         dispatch(setAccessToken(newAccessToken.access));
-
-        // Повторяем исходный запрос с новым токеном
         return await apiFunction(newAccessToken.access);
       } catch (refreshError) {
-        // Если обновление токена не удалось, пробрасываем ошибку
-        console.error('Не удалось обновить токен:', refreshError);
+        localStorage.removeItem('access');
+        localStorage.removeItem('refresh');
+        localStorage.removeItem('username');
         throw refreshError;
       }
     }
 
-    // Если ошибка не 401, пробрасываем её
     throw error;
   }
 };
