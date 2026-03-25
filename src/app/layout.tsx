@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Montserrat } from 'next/font/google';
 import './globals.css';
 import ReduxProvider from '@/store/ReduxProvider';
+import { SkeletonTheme } from 'react-loading-skeleton';
 
 const montserrat = Montserrat({
   variable: '--font-montserrat',
@@ -21,7 +22,11 @@ export default function RootLayout({
   return (
     <ReduxProvider>
       <html lang="en">
-        <body className={`${montserrat.variable}`}>{children}</body>
+        <body className={`${montserrat.variable}`}>
+          <SkeletonTheme baseColor="#313131" highlightColor="#4a4a4a">
+            {children}
+          </SkeletonTheme>
+        </body>
       </html>
     </ReduxProvider>
   );
