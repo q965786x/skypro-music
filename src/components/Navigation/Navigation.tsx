@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { useAppDispatch } from '@/store/store';
 import { clearUser } from '@/store/features/authSlice';
 import { useRouter } from 'next/navigation';
+import { showToast } from '@/utils/toastUtils';
 
 export default function Navigation() {
   const dispatch = useAppDispatch();
@@ -22,6 +23,7 @@ export default function Navigation() {
 
   const logout = () => {
     dispatch(clearUser());
+    showToast.success('Вы успешно вышли из системы');
     router.push('/auth/signin');
   };
 

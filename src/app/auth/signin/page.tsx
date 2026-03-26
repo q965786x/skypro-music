@@ -13,6 +13,7 @@ import {
   setRefreshToken,
   setUsername,
 } from '@/store/features/authSlice';
+import { showToast } from '@/utils/toastUtils';
 
 export default function Signin() {
   const dispatch = useAppDispatch();
@@ -36,19 +37,20 @@ export default function Signin() {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     e.preventDefault();
-    setErrorMessage('');
 
     if (!email.trim() || !password.trim()) {
-      return setErrorMessage('Заполните все поля');
+      showToast.warning('Заполните все поля');
+      return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setErrorMessage('Введите корректный email');
+      showToast.warning('Введите корректный email');
       return;
     }
 
     setIsLoading(true);
+
     loginUser({ email, password, username: email })
       .then(() => {
         dispatch(setUsername(email));
@@ -57,17 +59,18 @@ export default function Signin() {
       .then((res) => {
         dispatch(setAccessToken(res.access));
         dispatch(setRefreshToken(res.refresh));
+        showToast.success('Вход выполнен успешно!');
         router.push('/music/main');
       })
       .catch((error: AxiosError) => {
         if (error instanceof AxiosError) {
           if (error.response) {
             const errorData = error.response.data as { message: string };
-            setErrorMessage(errorData.message);
+            showToast.error(errorData.message || 'Ошибка входа');
           } else if (error.request) {
-            setErrorMessage('Что-то с интернетом');
+            showToast.error('Ошибка сети. Проверьте подключение');
           } else {
-            setErrorMessage('Неизвестная ошибка');
+            showToast.error('Неизвестная ошибка');
           }
         }
       })
@@ -104,7 +107,6 @@ export default function Signin() {
         disabled={isLoading}
       />
 
-      <div className={styles.errorContainer}>{errorMessage}</div>
       <button
         disabled={isLoading}
         onClick={onSubmit}

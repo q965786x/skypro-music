@@ -1,0 +1,56 @@
+.skeletonPlaylist {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px; 
+}
+
+.skeletonPlaylist__item {
+  width: 100%;
+}
+
+.skeletonPlaylist__track {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  gap: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Стили для колонок, повторяющие структуру TrackList */
+.skeletonPlaylist__titleImage {
+  width: 51px;
+  height: 51px;
+  margin-right: 17px;
+  flex-shrink: 0;
+}
+
+.skeletonPlaylist__titleText {
+  width: 40%;
+  min-width: 200px;
+  flex-shrink: 1;
+}
+
+.skeletonPlaylist__author {
+  width: 25%;
+  min-width: 150px;
+  flex-shrink: 1;
+  padding: 0 10px;
+}
+
+.skeletonPlaylist__album {
+  width: 25%;
+  min-width: 150px;
+  flex-shrink: 1;
+  padding: 0 10px;
+}
+
+.skeletonPlaylist__time {
+  width: 10%;
+  min-width: 60px;
+  flex-shrink: 0;
+  text-align: right;
+  padding-right: 37px; /* Чтобы выровнять с реальным временем */
+}
