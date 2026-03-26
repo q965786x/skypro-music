@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from '@/store/store';
 import styles from './bar.module.css';
 import classnames from 'classnames';
 import Link from 'next/link';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   setIsPlaying,
   setNextTrack,
@@ -14,6 +14,8 @@ import {
 import { getTimePanel } from '@/utils/helper';
 import ProgressBar from '../ProgressBar/ProgressBar';
 import { TrackType } from '@/sharedTypes/sharedTypes';
+import { showToast } from '@/utils/toastUtils';
+import { useLikeTrack } from '@/hooks/useLikeTracks';
 
 export default function Bar() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -37,7 +39,13 @@ export default function Bar() {
   );
   const isShuffle = useAppSelector((state) => state.tracks.isShuffle);
 
-  const getCurrentPlaylistInfo = useCallback(() => {
+  const {
+    toggleLike,
+    isLike,
+    isLoading: isLikeLoading,
+  } = useLikeTrack(currentTrack);
+
+  const getCurrentPlaylistInfo = () => {
     const activePlaylist = isShuffle ? shuffledPlaylist : currentPlaylist;
 
     if (!currentTrack || activePlaylist.length === 0) {
@@ -49,10 +57,10 @@ export default function Bar() {
     );
 
     return { playlist: activePlaylist, index };
-  }, [currentTrack, currentPlaylist, shuffledPlaylist, isShuffle]);
+  };
 
   useEffect(() => {
-    const { playlist: activePlaylist, index } = getCurrentPlaylistInfo();
+    const { playlist: currentPlaylistInfo, index } = getCurrentPlaylistInfo();
 
     if (!currentTrack || index === -1) {
       setIsFirstTrack(true);
@@ -61,8 +69,8 @@ export default function Bar() {
     }
 
     setIsFirstTrack(index <= 0);
-    setIsLastTrack(index >= activePlaylist.length - 1);
-  }, [currentTrack, getCurrentPlaylistInfo]);
+    setIsLastTrack(index >= currentPlaylist.length - 1);
+  }, [currentTrack, currentPlaylist, shuffledPlaylist, isShuffle]);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -86,7 +94,7 @@ export default function Bar() {
         } else {
           audioRef.current.pause();
         }
-      } catch {
+      } catch (error) {
         dispatch(setIsPlaying(false));
       }
     };
@@ -102,6 +110,15 @@ export default function Bar() {
     }
   };
 
+  const handleLikeClick = async () => {
+    if (!currentTrack) {
+      showToast.warning('Нет активного трека');
+      return;
+    }
+
+    await toggleLike();
+  };
+
   if (!currentTrack) return <></>;
 
   const playTrack = async () => {
@@ -109,7 +126,8 @@ export default function Bar() {
       try {
         await audioRef.current.play();
         dispatch(setIsPlaying(true));
-      } catch {
+      } catch (error) {
+        console.error('Не удалось воспроизвести трек:', error);
         dispatch(setIsPlaying(false));
       }
     }
@@ -164,15 +182,15 @@ export default function Bar() {
   };
 
   const onNextTrack = () => {
-    const { index, playlist } = getCurrentPlaylistInfo();
+    const { playlist: currentPlaylist, index } = getCurrentPlaylistInfo();
 
-    if (index < playlist.length - 1) {
+    if (index < currentPlaylist.length - 1) {
       dispatch(setNextTrack());
     }
   };
 
   const onPrevTrack = () => {
-    const { index } = getCurrentPlaylistInfo();
+    const { playlist: currentPlaylist, index } = getCurrentPlaylistInfo();
 
     if (index > 0) {
       dispatch(setPrevTrack());
@@ -188,16 +206,14 @@ export default function Bar() {
       return;
     }
 
-    const { index, playlist } = getCurrentPlaylistInfo();
+    const { playlist: currentPlaylistInfo, index } = getCurrentPlaylistInfo();
 
-    if (index === playlist.length - 1) {
+    if (index === currentPlaylistInfo.length - 1) {
       dispatch(setIsPlaying(false));
     } else {
       dispatch(setNextTrack());
     }
   };
-
-  if (!currentTrack) return null;
 
   return (
     <div className={styles.bar}>
@@ -240,7 +256,7 @@ export default function Bar() {
                 })}
               >
                 <svg className={styles.player__btnPlaySvg}>
-                  {isPlay ? ( // Меняем иконку в зависимости от состояния
+                  {isPlay ? (
                     <use xlinkHref="/img/icon/sprite.svg#icon-pause"></use>
                   ) : (
                     <use xlinkHref="/img/icon/sprite.svg#icon-play"></use>
@@ -307,22 +323,27 @@ export default function Bar() {
               <div className={styles.trackPlay__dislike}>
                 <div
                   className={classnames(
-                    styles.player__btnShuffle,
+                    styles.trackPlay__like,
                     styles.btnIcon,
+                    {
+                      [styles.trackPlay__like_active]: isLike,
+                      [styles.trackPlay__like_loading]: isLikeLoading,
+                    },
                   )}
+                  onClick={handleLikeClick}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleLikeClick();
+                    }
+                  }}
                 >
                   <svg className={styles.trackPlay__likeSvg}>
-                    <use xlinkHref="/img/icon/sprite.svg#icon-like"></use>
-                  </svg>
-                </div>
-                <div
-                  className={classnames(
-                    styles.trackPlay__dislike,
-                    styles.btnIcon,
-                  )}
-                >
-                  <svg className={styles.trackPlay__dislikeSvg}>
-                    <use xlinkHref="/img/icon/sprite.svg#icon-dislike"></use>
+                    <use
+                      xlinkHref={`/img/icon/sprite.svg#${isLike ? 'icon-like' : 'icon-dislike'}`}
+                    ></use>
                   </svg>
                 </div>
               </div>
@@ -351,7 +372,6 @@ export default function Bar() {
                 />
               </div>
             </div>
-            // eslint-disable-next-line prettier/prettier
             <div className={styles.player__timeDisplay}>
               <span className={styles.timeDisplay__text}>
                 {getTimePanel(currentTime, duration)}

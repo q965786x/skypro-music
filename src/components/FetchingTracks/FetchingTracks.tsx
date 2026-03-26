@@ -12,6 +12,7 @@ import {
 } from '@/store/features/trackSlice';
 import { withReAuth } from '@/utils/withReAuth';
 import { useRouter } from 'next/navigation';
+import { showToast } from '@/utils/toastUtils';
 
 export default function FetchingTracks() {
   const dispatch = useAppDispatch();
@@ -44,13 +45,13 @@ export default function FetchingTracks() {
     } catch (error) {
       if (error instanceof AxiosError) {
         if (error.response) {
-          dispatch(
-            setFetchError(error.response.data?.message || 'Ошибка загрузки'),
+          showToast.error(
+            error.response.data?.message || 'Ошибка загрузки треков',
           );
         } else if (error.request) {
-          dispatch(setFetchError('Ошибка сети. Проверьте подключение'));
+          showToast.error('Ошибка сети. Проверьте подключение');
         } else {
-          dispatch(setFetchError('Неизвестная ошибка'));
+          showToast.error('Неизвестная ошибка при загрузке');
         }
       }
     } finally {

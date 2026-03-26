@@ -7,6 +7,7 @@ import { ChangeEvent, useState } from 'react';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import { createUser } from '@/services/auth/authApi';
+import { showToast } from '@/utils/toastUtils';
 
 export default function Signup() {
   const router = useRouter();
@@ -71,11 +72,10 @@ export default function Signup() {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     e.preventDefault();
-    setErrorMessage('');
 
     const validationError = validateForm();
     if (validationError) {
-      setErrorMessage(validationError);
+      showToast.warning(validationError);
       return;
     }
 
@@ -96,55 +96,51 @@ export default function Signup() {
         }
       }
 
-      try {
-      } catch (loginError) {
-        router.push('/auth/signin?registered=true');
-      }
-
+      showToast.success('Регистрация прошла успешно! Теперь вы можете войти');
       router.push('/auth/signin?registered=true');
     } catch (error) {
       if (error instanceof AxiosError) {
         if (error.code === 'ERR_NETWORK') {
-          setErrorMessage(
+          showToast.error(
             'Ошибка соединения. Проверьте интернет и попробуйте снова.',
           );
         } else if (error.response) {
           switch (error.response.status) {
             case 400:
               if (error.response.data?.message) {
-                setErrorMessage(error.response.data.message);
+                showToast.error(error.response.data.message);
               } else if (error.response.data?.email) {
-                setErrorMessage(`Ошибка в email: ${error.response.data.email}`);
+                showToast.error(`Ошибка в email: ${error.response.data.email}`);
               } else if (error.response.data?.password) {
-                setErrorMessage(
+                showToast.error(
                   `Ошибка в пароле: ${error.response.data.password}`,
                 );
               } else {
-                setErrorMessage(
+                showToast.error(
                   'Некорректные данные. Проверьте введенную информацию.',
                 );
               }
               break;
             case 403:
-              setErrorMessage(
+              showToast.error(
                 error.response.data?.message ||
                   'Пользователь с таким email уже существует',
               );
               break;
             case 500:
-              setErrorMessage('Ошибка сервера. Попробуйте позже.');
+              showToast.error('Ошибка сервера. Попробуйте позже.');
               break;
             default:
-              setErrorMessage(
+              showToast.error(
                 error.response.data?.message ||
                   'Произошла ошибка при регистрации',
               );
           }
         } else {
-          setErrorMessage('Не удалось выполнить запрос. Попробуйте позже.');
+          showToast.error('Не удалось выполнить запрос. Попробуйте позже.');
         }
       } else {
-        setErrorMessage('Произошла неизвестная ошибка');
+        showToast.error('Произошла неизвестная ошибка');
       }
     } finally {
       setIsLoading(false);
@@ -197,7 +193,7 @@ export default function Signup() {
         onChange={onChangeConfirmPassword}
         disabled={isLoading}
       />
-      <div className={styles.errorContainer}>{errorMessage}</div>
+
       <button
         disabled={isLoading}
         onClick={onSubmit}

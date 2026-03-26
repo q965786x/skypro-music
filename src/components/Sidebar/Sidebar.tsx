@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useAppDispatch, useAppSelector } from '@/store/store';
 import { useRouter } from 'next/navigation';
 import { clearUser } from '@/store/features/authSlice';
+import { showToast } from '@/utils/toastUtils';
 
 export default function Sidebar() {
   const dispatch = useAppDispatch();
@@ -14,6 +15,7 @@ export default function Sidebar() {
 
   const handleLogout = () => {
     dispatch(clearUser());
+    showToast.success('До свидания!');
 
     const currentPath = window.location.pathname;
     if (currentPath.includes('/music/playlist')) {
