@@ -42,8 +42,7 @@
 
 .main__sidebar {
   width: 418px;
-  flex-shrink: 0;
-  padding: 20px 90px 20px 78px;
+  flex-shrink: 0;  
   overflow-y: auto;
   overflow-x: hidden;
 }

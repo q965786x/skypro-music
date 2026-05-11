@@ -9,6 +9,8 @@ import Filter from '../Filter/Filter';
 import { useEffect, useMemo } from 'react';
 import { setPagePlaylist } from '@/store/features/trackSlice';
 import { useAppDispatch, useAppSelector } from '@/store/store';
+import SkeletonTracklist from '@/components/SkeletonTracklist/SkeletonTracklist';
+import SkeletonFilter from '@/components/SkeletonFilter/SkeletonFilter';
 
 type centerBlockProps = {
   tracks: TrackType[];
@@ -56,7 +58,7 @@ export default function Centerblock({
   return (
     <div className={styles.centerblock}>
       <Search />
-      <Filter tracks={pagePlaylist} />
+      {isLoading ? <SkeletonFilter /> : <Filter tracks={pagePlaylist} />}
       <h2 className={styles.centerblock__h2}>{title}</h2>
       <div className={styles.centerblock__content}>
         <div className={styles.content__title}>
@@ -80,7 +82,7 @@ export default function Centerblock({
           {errorRes ? (
             <span style={{ color: '#ff6b6b' }}>{errorRes}</span>
           ) : isLoading ? (
-            <span style={{ color: '#ffffff' }}>Загрузка</span>
+            <SkeletonTracklist />
           ) : displayedTracks.length === 0 ? (
             <span style={{ color: '#ffffff' }}>Ничего не найдено</span>
           ) : (

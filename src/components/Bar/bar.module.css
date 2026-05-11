@@ -413,3 +413,55 @@
   cursor: pointer;
 }
 
+.trackPlay__dislike {
+  margin-left: 28.5px;
+  display: flex;
+  align-items: center;
+}
+
+.trackPlay__like {
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.trackPlay__likeSvg {
+  width: 18px;
+  height: 16px;
+  fill: transparent;
+  stroke: #696969;
+  transition: all 0.2s ease;
+}
+
+.trackPlay__like:hover .trackPlay__likeSvg {
+  stroke: #acacac;
+  transform: scale(1.1);
+}
+
+.trackPlay__like:active .trackPlay__likeSvg {
+  transform: scale(0.95);
+}
+
+.trackPlay__like_active .trackPlay__likeSvg {
+  stroke: #b672ff;
+  fill: #b672ff;
+}
+
+.trackPlay__like_active:hover .trackPlay__likeSvg {
+  stroke: #d9b6ff;
+  fill: #d9b6ff;
+}
+
+.trackPlay__like_loading {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.trackPlay__like_active .trackPlay__likeSvg {
+  animation: likeAnimation 0.3s ease;
+}
+
