@@ -1,0 +1,16 @@
+.skeletonFilter {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 51px;
+  gap: 15px;
+}
+
+.skeletonFilter__title {
+  display: inline-block;
+}
+
+.skeletonFilter__buttons {
+  display: flex;
+  gap: 10px;
+}
